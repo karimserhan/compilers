@@ -28,8 +28,8 @@ public class BaliStatements {
             // do nothing
         } else { // hopefully an ASSIGN
             f.pushBack();
-            String assign = getAssign(f);
-            if(assign == null) return null;
+            String assignSamCode = getAssign(f);
+            if(assignSamCode == null) return null;
         }
         return "";
     }
@@ -73,36 +73,36 @@ public class BaliStatements {
         f.check("while");
 
         if (!f.check("(")) {
-            System.
+            System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
         BaliExpression.getExp(f);
 
         if (!f.check(")")) {
-            // error
+            System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
         getStatement(f);
-        return null;
+        return "";
     }
 
     public static String getIf(SamTokenizer f) {
         f.check("if");
 
         if (!f.check("(")) {
-            // error
+            System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
         BaliExpression.getExp(f);
 
         if (!f.check(")")) {
-            // error
+            System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
         getStatement(f);
 
         if (!f.check("else")) {
-            // error
+            System.out.println("Expecting 'else' at line: " + f.lineNo());
             return null;
         }
 
@@ -114,7 +114,7 @@ public class BaliStatements {
         f.check("return");
         BaliExpression.getExp(f);
         if (!f.check(";")) {
-            // error
+            System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
         return null;
