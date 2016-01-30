@@ -5,6 +5,11 @@ import edu.cornell.cs.sam.io.TokenizerException;
 
 public class BaliCompiler
 {
+	public static void main(String[] args) {
+		String baliFileName = "ex.bali";//args[0];
+		compiler(baliFileName);
+	}
+
 	public static String compiler(String fileName)
 	{
 		//returns SaM code for program in file
