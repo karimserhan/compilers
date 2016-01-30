@@ -69,26 +69,20 @@ public class BaliCompiler
 		}
 		return null;
 	}
-	public static String getBody(SamTokenizer f)
-	{
+	public static String getBody(SamTokenizer f) {
 		return null;
 
 	}
 
 	public static String getDeclaration(SamTokenizer f) {
-
-		try
-		{
+		try {
 			f.check("int");
 
-			while(true)
-			{
+			while(true) {
 				String variableName;
 				try {
 					variableName = f.getWord();
-				}
-				catch (TokenizerException e)
-				{
+				} catch (TokenizerException e) {
 					//Error
 					//Invalid variable name
 
@@ -96,8 +90,7 @@ public class BaliCompiler
 				}
 				if(f.check("=")) {
 					String expression = BaliExpression.getExp(f);
-				}
-				else {
+				} else {
 					f.pushBack();
 				}
 
@@ -107,20 +100,17 @@ public class BaliCompiler
 				}
 			}
 
-			if(!f.check(";"))
-			{
+			if(!f.check(";")) {
 				//Error
 				//Statment must end with semicolon
 				return null;
 			}
 
-
 			//Need to change
 			return null;
 		}
 
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			//
 		}
 
