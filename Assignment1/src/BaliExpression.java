@@ -90,6 +90,18 @@ public class BaliExpression {
     }
 
     private static String getActuals(SamTokenizer f) {
+
+        while(!f.check(")")) {
+            f.pushBack();
+            getExp(f);
+            if(!f.check(",")) {
+                break;
+            }
+        }
+
+        f.pushBack();
+
+
         return null;
     }
 }
