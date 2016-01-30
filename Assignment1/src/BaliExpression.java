@@ -64,7 +64,7 @@ public class BaliExpression {
             } else {
                 f.pushBack();
                 if (!f.check("!")) {
-                    System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.")
+                    System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.");
                     return null;
                 }
                 result = "!" + getExp(f);
@@ -83,7 +83,7 @@ public class BaliExpression {
         }
         // eat up the remaining )
         if (!f.check(")")) {
-            System.out.println("Expecting ')' at line: " f.lineNo());
+            System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
 
