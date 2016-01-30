@@ -9,11 +9,69 @@ public class BaliExpression {
         if(f.peekAtKind() == Tokenizer.TokenType.INTEGER)
         {
             //Literal Case
+            return f.getString();
         }
-        else if(f.check("true"))
+        if(f.check("true"))
+        {
+            //Literal Case
+            return "1";
+        }
+        else
         {
             f.pushBack();
-            //Literal Case
+        }
+
+        if(f.check("false"))
+        {
+            //Literal case
+            return "0";
+        }
+        else
+        {
+            f.pushBack();
+        }
+
+        if(f.check("("))
+        {
+            if(f.peekAtKind() == Tokenizer.TokenType.OPERATOR)
+            {
+                if(f.check("-"))
+                {
+                    //Generate SAM code
+                    String result = "-" + getExp(f);
+                    if(!f.check(")"))
+                    {
+                        //Error
+                        return null;
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    f.pushBack();
+                    if(!f.check("!"))
+                    {
+                        //Error
+                        return null;
+                    }
+                    String result = "!" + getExp(f);
+                    if(!f.check(")"))
+                    {
+                        //Error
+                        return null;
+                    }
+                    return result;
+                }
+
+
+
+            }
+        }
+
+        else
+        {
+            f.pushBack();
         }
 
         else

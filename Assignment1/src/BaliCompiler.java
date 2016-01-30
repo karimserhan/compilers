@@ -70,8 +70,19 @@ public class BaliCompiler
 		return null;
 	}
 	public static String getBody(SamTokenizer f) {
-		return null;
+		f.check("{");
+		while (f.check("int")) {
+			f.pushBack();
+			getDeclaration(f);
+		}
+		f.pushBack();
+		while (!f.check("}")) {
+			f.pushBack();
+			BaliStatements.getStatement(f);
+		}
+		f.pushBack();
 
+		return null;
 	}
 
 	public static String getDeclaration(SamTokenizer f) {
