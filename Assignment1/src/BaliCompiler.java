@@ -1,19 +1,20 @@
 import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.Tokenizer.TokenType;
+import edu.cornell.cs.sam.io.TokenizerException;
 
 public class BaliCompiler
 {
 	public static String compiler(String fileName)
 	{
 		//returns SaM code for program in file
-		try 
+		try
 		{
 			SamTokenizer f = new SamTokenizer (fileName);
 			String pgm = getProgram(f);
 			return pgm;
-		} 
-		catch (Exception e) 
+		}
+		catch (Exception e)
 		{
 			System.out.println("Fatal error: could not compile program");
 			return "STOP\n";
@@ -34,7 +35,7 @@ public class BaliCompiler
 		{
 			System.out.println("Fatal error: could not compile program");
 			return "STOP\n";
-		}		
+		}
 	}
 	public static String getMethod(SamTokenizer f)
 	{
@@ -43,7 +44,7 @@ public class BaliCompiler
 		//in the tokenizer.
 		//TODO: add appropriate exception handlers to generate useful error msgs.
 		f.check("int"); //must match at begining
-		String methodName = f.getString(); 
+		String methodName = f.getString();
 		f.check ("("); // must be an opening parenthesis
 		String formals = getFormals(f);
 		f.check(")");  // must be an closing parenthesis
@@ -60,7 +61,7 @@ public class BaliCompiler
 			  switch (f.peekAtKind()) {
 				 case INTEGER: //E -> integer
 					return "PUSHIMM " + f.getInt() + "\n";
-				 case OPERATOR:  
+				 case OPERATOR:
 				 {
 				 }
 				 default:   return "ERROR\n";
@@ -78,8 +79,64 @@ public class BaliCompiler
 		}
 		return null;
 	}
+	public static String getBody(SamTokenizer f)
+	{
+		return null;
 
-	public static String getBody(SamTokenizer f) {
+	}
+
+	public static String getDeclaration(SamTokenizer f) {
+
+		try
+		{
+			f.check("int");
+
+			while(true)
+			{
+				String variableName;
+				try {
+					variableName = f.getWord();
+				}
+				catch (TokenizerException e)
+				{
+					//Error
+					//Invalid variable name
+
+					return null;
+				}
+				if(f.check("=")) {
+					String expression = getExp(f);
+				}
+				else {
+					f.pushBack();
+				}
+
+				if(!f.check(",")) {
+					f.pushBack();
+					break;
+				}
+			}
+
+			if(!f.check(";"))
+			{
+				//Error
+				//Statment must end with semicolon
+				return null;
+			}
+
+
+			//Need to change
+			return null;
+		}
+
+		catch (Exception e)
+		{
+			//
+		}
+
+		return null;
+
 
 	}
 }
+
