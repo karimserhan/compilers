@@ -39,7 +39,6 @@ public class BaliExpression {
         }
 
         if (f.check("(")) { // method call
-            f.pushBack();
             getActuals(f);
             if (!f.check(")")) {
                 // error
@@ -47,6 +46,7 @@ public class BaliExpression {
             }
             return ""; //fix duh
         } else { // variable use
+            f.pushBack();
             return variableName;
         }
     }
