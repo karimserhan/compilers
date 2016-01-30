@@ -4,8 +4,7 @@ import edu.cornell.cs.sam.io.TokenizerException;
 
 public class BaliExpression {
 
-    public static String getExp(SamTokenizer f)
-    {
+    public static String getExp(SamTokenizer f) {
         // Literal case
         if(f.peekAtKind() == Tokenizer.TokenType.INTEGER) {
             return f.getString();
@@ -24,8 +23,7 @@ public class BaliExpression {
         }
 
         // not a literal case
-        if(f.check("("))
-        {
+        if(f.check("(")) {
             f.pushBack();
             return getParenthesizedExp(f);
         }
