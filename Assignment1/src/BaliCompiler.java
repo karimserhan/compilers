@@ -56,17 +56,7 @@ public class BaliCompiler
 		//And then have calls to getDeclarations and getStatements.
 		return null;
 	}
-	public static String getExp(SamTokenizer f)
-	{
-			  switch (f.peekAtKind()) {
-				 case INTEGER: //E -> integer
-					return "PUSHIMM " + f.getInt() + "\n";
-				 case OPERATOR:
-				 {
-				 }
-				 default:   return "ERROR\n";
-			  }
-	}
+
 	public static String getFormals(SamTokenizer f){
 
 		while(f.peekAtKind() != TokenType.CHARACTER) {
@@ -105,7 +95,7 @@ public class BaliCompiler
 					return null;
 				}
 				if(f.check("=")) {
-					String expression = getExp(f);
+					String expression = BaliExpression.getExp(f);
 				}
 				else {
 					f.pushBack();

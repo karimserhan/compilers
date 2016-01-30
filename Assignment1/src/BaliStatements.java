@@ -37,7 +37,7 @@ public class BaliStatements {
             // error
             return null;
         }
-        BaliCompiler.getExp(f);
+        BaliExpression.getExp(f);
         return null;
     }
 
