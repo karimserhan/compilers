@@ -4,7 +4,7 @@ import edu.cornell.cs.sam.io.Tokenizer.TokenType;
 
 public class BaliCompiler
 {
-	static String compiler(String fileName) 
+	public static String compiler(String fileName)
 	{
 		//returns SaM code for program in file
 		try 
@@ -19,7 +19,7 @@ public class BaliCompiler
 			return "STOP\n";
 		}
 	}
-	static String getProgram(SamTokenizer f)
+	public static String getProgram(SamTokenizer f)
 	{
 		try
 		{
@@ -36,7 +36,7 @@ public class BaliCompiler
 			return "STOP\n";
 		}		
 	}
-	static String getMethod(SamTokenizer f)
+	public static String getMethod(SamTokenizer f)
 	{
 		//TODO: add code to convert a method declaration to SaM code.
 		//Since the only data type is an int, you can safely check for int 
@@ -55,7 +55,7 @@ public class BaliCompiler
 		//And then have calls to getDeclarations and getStatements.
 		return null;
 	}
-	static String getExp(SamTokenizer f) 
+	public static String getExp(SamTokenizer f)
 	{
 			  switch (f.peekAtKind()) {
 				 case INTEGER: //E -> integer
@@ -66,7 +66,7 @@ public class BaliCompiler
 				 default:   return "ERROR\n";
 			  }
 	}
-	static String getFormals(SamTokenizer f){
+	public static String getFormals(SamTokenizer f){
 
 		while(f.peekAtKind() != TokenType.CHARACTER) {
 			f.check("int");
@@ -78,7 +78,8 @@ public class BaliCompiler
 		}
 		return null;
 	}
-	static String getBody(SamTokenizer f) {
+
+	public static String getBody(SamTokenizer f) {
 
 	}
 }
