@@ -26,7 +26,7 @@ public class BaliCompiler
 			String pgm="";
 			while(f.peekAtKind()!=TokenType.EOF)
 			{
-				pgm+= getMethod(f);
+				getMethod(f);
 			}
 			return pgm;
 		}
@@ -47,6 +47,10 @@ public class BaliCompiler
 		f.check ("("); // must be an opening parenthesis
 		String formals = getFormals(f);
 		f.check(")");  // must be an closing parenthesis
+		f.check("{");
+		getBody(f);
+		f.check("}");
+
 		//You would need to read in formals if any
 		//And then have calls to getDeclarations and getStatements.
 		return null;
@@ -63,6 +67,18 @@ public class BaliCompiler
 			  }
 	}
 	static String getFormals(SamTokenizer f){
-			return null;
+
+		while(f.peekAtKind() != TokenType.CHARACTER) {
+			f.check("int");
+			String argName = f.getString();
+			if (!f.check(",")) {
+				f.pushBack(); // push back the (hopefully) parenthesis
+				break;
+			}
+		}
+		return null;
+	}
+	static String getBody(SamTokenizer f) {
+
 	}
 }
