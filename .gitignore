@@ -1,0 +1,5 @@
+**/workspace.xml
+**/tasks.xml
+**/out
+*.DS_Store
+
