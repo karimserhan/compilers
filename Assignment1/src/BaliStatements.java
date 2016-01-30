@@ -6,24 +6,30 @@ public class BaliStatements {
     public static String getStatement(SamTokenizer f) {
         if (f.check("return")) {
             f.pushBack();
-            getReturn(f);
+            String returnSamCode = getReturn(f);
+            if(returnSamCode == null) return null;
         } else if (f.check("if")) {
             f.pushBack();
-            getIf(f);
+            String ifSamCode = getIf(f);
+            if(ifSamCode == null) return null;
         } else if (f.check("while")) {
             f.pushBack();
-            getWhile(f);
+            String whileSamCode = getWhile(f);
+            if(whileSamCode == null) return null;
         } else if (f.check("break")) {
             f.pushBack();
-            getBreak(f);
+            String breakSamCode = getBreak(f);
+            if(breakSamCode == null) return null;
         } else if (f.check("{")) {
             f.pushBack();
-            getBlock(f);
+            String blockSamCode = getBlock(f);
+            if(blockSamCode == null) return null;
         }else if (f.check(";")) {
             // do nothing
         } else { // hopefully an ASSIGN
             f.pushBack();
-            getAssign(f);
+            String assign = getAssign(f);
+            if(assign == null) return null;
         }
         return "";
     }
@@ -32,35 +38,32 @@ public class BaliStatements {
         try {
             String writeVariable = f.getWord();
         } catch (TokenizerException exp) {
-            // error
+            System.out.println("Invalid variable name at line: " + f.lineNo());
             return null;
         }
         if (!f.check("=")) {
-            // error
+            System.out.println("Expecting '=' at line: " + f.lineNo());
             return null;
         }
         BaliExpression.getExp(f);
-        return null;
+        return "";
     }
 
     public static String getBlock(SamTokenizer f) {
-        if (!f.check("{")) {
-            //error
-            return null;
-        }
+        f.check("{");
 
         while (!f.check("}")) {
             f.pushBack();
             getStatement(f);
         }
-        return null;
+        return "";
     }
 
     public static String getBreak(SamTokenizer f) {
         f.check("break");
 
         if (!f.check(";")) {
-            // error
+            System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
         return null;
@@ -70,7 +73,7 @@ public class BaliStatements {
         f.check("while");
 
         if (!f.check("(")) {
-            // error
+            System.
             return null;
         }
         BaliExpression.getExp(f);

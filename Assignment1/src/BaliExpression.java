@@ -34,14 +34,15 @@ public class BaliExpression {
             variableName = f.getWord();
         }
         catch (TokenizerException e) {
-            //Error: Wrong name
+            System.out.println("Invalid variable name at line: " + f.lineNo());
             return null;
         }
 
         if (f.check("(")) { // method call
-            getActuals(f);
+            String actualsSamCode = getActuals(f);
+            if(actualsSamCode == null) return null;
             if (!f.check(")")) {
-                // error
+                System.out.println("Expecting ')' at line: " + f.lineNo());
                 return null;
             }
             return ""; //fix duh
@@ -63,7 +64,7 @@ public class BaliExpression {
             } else {
                 f.pushBack();
                 if (!f.check("!")) {
-                    //Error
+                    System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.")
                     return null;
                 }
                 result = "!" + getExp(f);
@@ -82,7 +83,7 @@ public class BaliExpression {
         }
         // eat up the remaining )
         if (!f.check(")")) {
-            //Error
+            System.out.println("Expecting ')' at line: " f.lineNo());
             return null;
         }
 
@@ -93,15 +94,13 @@ public class BaliExpression {
 
         while(!f.check(")")) {
             f.pushBack();
-            getExp(f);
+            String expression = getExp(f);
+            if(expression == null) return null;
             if(!f.check(",")) {
                 break;
             }
         }
-
         f.pushBack();
-
-
-        return null;
+        return "";
     }
 }
