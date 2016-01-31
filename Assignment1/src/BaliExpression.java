@@ -23,7 +23,7 @@ public class BaliExpression {
         }
 
         // not a literal case
-        if(f.check('(')) {
+        if(f.getString().equals("(")) {
             f.pushBack();
             return getParenthesizedExp(f);
         }
@@ -38,10 +38,10 @@ public class BaliExpression {
             return null;
         }
 
-        if (f.check('(')) { // method call
+        if (f.getString().equals("(")) { // method call
             String actualsSamCode = getActuals(f);
             if(actualsSamCode == null) return null;
-            if (!f.check(')')) {
+            if (!f.getString().equals(")")) {
                 System.out.println("Expecting ')' at line: " + f.lineNo());
                 return null;
             }
@@ -58,12 +58,12 @@ public class BaliExpression {
 
         // unary operators
         if(f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
-            if (f.check('-')) {
+            if (f.getString().equals("-")) {
                 //Generate SAM code
                 result = "-" + getExp(f);
             } else {
                 f.pushBack();
-                if (!f.check('!')) {
+                if (!f.getString().equals("!")) {
                     System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.");
                     return null;
                 }
@@ -92,11 +92,11 @@ public class BaliExpression {
 
     private static String getActuals(SamTokenizer f) {
 
-        while(!f.check(')')) {
+        while(!f.getString().equals(")")) {
             f.pushBack();
             String expression = getExp(f);
             if(expression == null) return null;
-            if(!f.check(',')) {
+            if(!f.getString().equals(",")) {
                 break;
             }
         }
