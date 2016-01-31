@@ -58,6 +58,7 @@ public class BaliCompiler
 		if (!f.check(')')) {  // must be an closing parenthesis
 			System.out.println("Expecting ')' at line: " + f.lineNo());
 		}
+
 		if (!f.check('{')) { // must have an opening brace
 			System.out.println("Expecting '{' at line: " + f.lineNo());
 		}
@@ -74,8 +75,8 @@ public class BaliCompiler
 	}
 
 	public static String getFormals(SamTokenizer f){
-
-		while(f.peekAtKind() != TokenType.CHARACTER) {
+		while(!f.check(')')) {
+			f.pushBack();
 			if (!f.check("int")) {
 				System.out.println("Expecting type (int) at line: " + f.lineNo());
 				return null;
@@ -92,10 +93,11 @@ public class BaliCompiler
 				break;
 			}
 		}
+		f.pushBack();
 		return "";
 	}
+
 	public static String getBody(SamTokenizer f) {
-		f.check('{');
 		while (f.check("int")) {
 			f.pushBack();
 			getDeclaration(f);
