@@ -75,7 +75,7 @@ public class BaliCompiler
 	}
 
 	public static String getFormals(SamTokenizer f){
-		while(!f.getString().equals(")")) {
+		while(!f.check(')')) {
 			f.pushBack();
 			if (!f.check("int")) {
 				System.out.println("Expecting type (int) at line: " + f.lineNo());
@@ -88,7 +88,7 @@ public class BaliCompiler
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
 			}
-			if (!f.getString().equals(",")) {
+			if (!f.check(',')) {
 				f.pushBack(); // push back the (hopefully) closing parenthesis
 				break;
 			}
@@ -103,7 +103,7 @@ public class BaliCompiler
 			getDeclaration(f);
 		}
 		f.pushBack();
-		while (!f.getString().equals("}")) {
+		while (!f.check('}')) {
 			f.pushBack();
 			BaliStatements.getStatement(f);
 		}
@@ -123,19 +123,19 @@ public class BaliCompiler
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
 			}
-			if(f.getString().equals("=")) {
+			if(f.check('=')) {
 				String expression = BaliExpression.getExp(f);
 			} else {
 				f.pushBack();
 			}
 
-			if(!f.getString().equals(",")) {
+			if(!f.check(',')) {
 				f.pushBack();
 				break;
 			}
 		}
 
-		if(!f.getString().equals(";")) {
+		if(!f.check(';')) {
 			System.out.println("Expecting ';' at line: " + f.lineNo());
 			return null;
 		}
