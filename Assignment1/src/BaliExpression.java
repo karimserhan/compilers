@@ -23,7 +23,7 @@ public class BaliExpression {
         }
 
         // not a literal case
-        if(f.check("(")) {
+        if(f.check('(')) {
             f.pushBack();
             return getParenthesizedExp(f);
         }
@@ -38,10 +38,10 @@ public class BaliExpression {
             return null;
         }
 
-        if (f.check("(")) { // method call
+        if (f.check('(')) { // method call
             String actualsSamCode = getActuals(f);
             if(actualsSamCode == null) return null;
-            if (!f.check(")")) {
+            if (!f.check(')')) {
                 System.out.println("Expecting ')' at line: " + f.lineNo());
                 return null;
             }
@@ -53,17 +53,17 @@ public class BaliExpression {
     }
 
     private static String getParenthesizedExp(SamTokenizer f) {
-        f.check("(");
+        f.check('(');
         String result;
 
         // unary operators
         if(f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
-            if (f.check("-")) {
+            if (f.check('-')) {
                 //Generate SAM code
                 result = "-" + getExp(f);
             } else {
                 f.pushBack();
-                if (!f.check("!")) {
+                if (!f.check('!')) {
                     System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.");
                     return null;
                 }
@@ -82,7 +82,7 @@ public class BaliExpression {
             }
         }
         // eat up the remaining )
-        if (!f.check(")")) {
+        if (!f.check(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
@@ -92,11 +92,11 @@ public class BaliExpression {
 
     private static String getActuals(SamTokenizer f) {
 
-        while(!f.check(")")) {
+        while(!f.check(')')) {
             f.pushBack();
             String expression = getExp(f);
             if(expression == null) return null;
-            if(!f.check(",")) {
+            if(!f.check(',')) {
                 break;
             }
         }

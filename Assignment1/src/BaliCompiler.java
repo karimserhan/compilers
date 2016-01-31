@@ -47,7 +47,7 @@ public class BaliCompiler
 			System.out.println("Invalid method name at line " + f.lineNo());
 		}
 
-		if (!f.check("(")) { // must be an opening parenthesis
+		if (!f.check('(')) { // must be an opening parenthesis
 			System.out.println("Expecting '(' at line: " + f.lineNo());
 		}
 		String formals = getFormals(f);
@@ -55,17 +55,17 @@ public class BaliCompiler
 			return null;
 		}
 
-		if (!f.check(")")) {  // must be an closing parenthesis
+		if (!f.check(')')) {  // must be an closing parenthesis
 			System.out.println("Expecting ')' at line: " + f.lineNo());
 		}
-		if (!f.check("{")) { // must have an opening brace
+		if (!f.check('{')) { // must have an opening brace
 			System.out.println("Expecting '{' at line: " + f.lineNo());
 		}
 		String body = getBody(f);
 		if (body == null) { // handled error occured
 			return null;
 		}
-		if (!f.check("}")) {// must have a closing brace
+		if (!f.check('}')) {// must have a closing brace
 			System.out.println("Expecting '}' at line: " + f.lineNo());
 			return null;
 		}
@@ -87,7 +87,7 @@ public class BaliCompiler
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
 			}
-			if (!f.check(",")) {
+			if (!f.check(',')) {
 				f.pushBack(); // push back the (hopefully) closing parenthesis
 				break;
 			}
@@ -95,13 +95,13 @@ public class BaliCompiler
 		return "";
 	}
 	public static String getBody(SamTokenizer f) {
-		f.check("{");
+		f.check('{');
 		while (f.check("int")) {
 			f.pushBack();
 			getDeclaration(f);
 		}
 		f.pushBack();
-		while (!f.check("}")) {
+		while (!f.check('}')) {
 			f.pushBack();
 			BaliStatements.getStatement(f);
 		}
@@ -121,19 +121,19 @@ public class BaliCompiler
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
 			}
-			if(f.check("=")) {
+			if(f.check('=')) {
 				String expression = BaliExpression.getExp(f);
 			} else {
 				f.pushBack();
 			}
 
-			if(!f.check(",")) {
+			if(!f.check(',')) {
 				f.pushBack();
 				break;
 			}
 		}
 
-		if(!f.check(";")) {
+		if(!f.check(';')) {
 			System.out.println("Expecting ';' at line: " + f.lineNo());
 			return null;
 		}
