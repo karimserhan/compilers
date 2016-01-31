@@ -129,6 +129,6 @@ public class BaliStatements {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
-        return null;
+        return "";
     }
 }

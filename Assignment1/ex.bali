@@ -1,4 +1,12 @@
+int method1(int a)
+{
+   int b;
+    b = (a+10);
+    return b;
 
-int fn3 () {
-	int x = ((7*3)+9+);
+}
+
+int main()
+{
+    return method1((5+));
 }
