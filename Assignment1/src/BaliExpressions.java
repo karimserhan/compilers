@@ -2,29 +2,24 @@ import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
-public class BaliExpression {
+public class BaliExpressions {
 
     public static String getExp(SamTokenizer f) {
         // Literal case
         if(f.peekAtKind() == Tokenizer.TokenType.INTEGER) {
             return f.getString();
         }
-        if(f.check("true")) {
+        if(f.test("true")) {
+            f.check("true");
             return "1";
         }
-        else {
-            f.pushBack();
-        }
-        if(f.check("false")) {
+        if(f.test("false")) {
+            f.check("false");
             return "0";
-        }
-        else {
-            f.pushBack();
         }
 
         // not a literal case
-        if(f.check('(')) {
-            f.pushBack();
+        if(f.test('(')) {
             return getParenthesizedExp(f);
         }
 
@@ -38,7 +33,8 @@ public class BaliExpression {
             return null;
         }
 
-        if (f.check('(')) { // method call
+        if (f.test('(')) { // method call
+            f.check('(');
             String actualsSamCode = getActuals(f);
             if(actualsSamCode == null) return null;
             if (!f.check(')')) {
@@ -47,7 +43,6 @@ public class BaliExpression {
             }
             return ""; //fix duh
         } else { // variable use
-            f.pushBack();
             return variableName;
         }
     }
@@ -58,11 +53,11 @@ public class BaliExpression {
 
         // unary operators
         if(f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
-            if (f.check('-')) {
+            if (f.test('-')) {
+                f.check('-');
                 //Generate SAM code
                 result = "-" + getExp(f);
             } else {
-                f.pushBack();
                 if (!f.check('!')) {
                     System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.");
                     return null;
@@ -92,15 +87,15 @@ public class BaliExpression {
 
     private static String getActuals(SamTokenizer f) {
 
-        while(!f.check(')')) {
-            f.pushBack();
+        while(!f.test(')')) {
             String expression = getExp(f);
             if(expression == null) return null;
-            if(!f.check(',')) {
+            if(!f.test(',')) {
                 break;
+            } else {
+                f.check(',');
             }
         }
-        f.pushBack();
         return "";
     }
 }

@@ -1,5 +1,4 @@
 import edu.cornell.cs.sam.io.SamTokenizer;
-import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.Tokenizer.TokenType;
 import edu.cornell.cs.sam.io.TokenizerException;
 
@@ -75,8 +74,7 @@ public class BaliCompiler
 	}
 
 	public static String getFormals(SamTokenizer f){
-		while(!f.check(')')) {
-			f.pushBack();
+		while(!f.test(')')) {
 			if (!f.check("int")) {
 				System.out.println("Expecting type (int) at line: " + f.lineNo());
 				return null;
@@ -88,27 +86,20 @@ public class BaliCompiler
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
 			}
-			if (!f.check(',')) {
-				f.pushBack(); // push back the (hopefully) closing parenthesis
+			if (!f.test(',')) {
 				break;
 			}
 		}
-		f.pushBack();
 		return "";
 	}
 
 	public static String getBody(SamTokenizer f) {
-		while (f.check("int")) {
-			f.pushBack();
+		while (f.test("int")) {
 			getDeclaration(f);
 		}
-		f.pushBack();
-		while (!f.check('}')) {
-			f.pushBack();
+		while (!f.test('}')) {
 			BaliStatements.getStatement(f);
 		}
-		f.pushBack();
-
 		return "";
 	}
 
@@ -123,15 +114,15 @@ public class BaliCompiler
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
 			}
-			if(f.check('=')) {
-				String expression = BaliExpression.getExp(f);
-			} else {
-				f.pushBack();
+			if(f.test('=')) {
+				f.check('=');
+				String expression = BaliExpressions.getExp(f);
 			}
 
-			if(!f.check(',')) {
-				f.pushBack();
+			if(!f.test(',')) {
 				break;
+			} else {
+				f.check(',');
 			}
 		}
 
