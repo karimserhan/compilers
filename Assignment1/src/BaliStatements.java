@@ -4,30 +4,25 @@ import edu.cornell.cs.sam.io.TokenizerException;
 public class BaliStatements {
 
     public static String getStatement(SamTokenizer f) {
-        if (f.check("return")) {
-            f.pushBack();
+        if (f.test("return")) {
             String returnSamCode = getReturn(f);
             if(returnSamCode == null) return null;
-        } else if (f.check("if")) {
-            f.pushBack();
+        } else if (f.test("if")) {
             String ifSamCode = getIf(f);
             if(ifSamCode == null) return null;
-        } else if (f.check("while")) {
-            f.pushBack();
+        } else if (f.test("while")) {
             String whileSamCode = getWhile(f);
             if(whileSamCode == null) return null;
-        } else if (f.check("break")) {
-            f.pushBack();
+        } else if (f.test("break")) {
             String breakSamCode = getBreak(f);
             if(breakSamCode == null) return null;
-        } else if (f.check("{")) {
-            f.pushBack();
+        } else if (f.test('{')) {
             String blockSamCode = getBlock(f);
             if(blockSamCode == null) return null;
-        }else if (f.check(";")) {
+        }else if (f.test(';')) {
             // do nothing
+            f.check(';');
         } else { // hopefully an ASSIGN
-            f.pushBack();
             String assignSamCode = getAssign(f);
             if(assignSamCode == null) return null;
         }
@@ -41,19 +36,19 @@ public class BaliStatements {
             System.out.println("Invalid variable name at line: " + f.lineNo());
             return null;
         }
-        if (!f.check("=")) {
+        if (!f.test("=")) {
             System.out.println("Expecting '=' at line: " + f.lineNo());
             return null;
         }
+        f.check('=');
         BaliExpression.getExp(f);
         return "";
     }
 
     public static String getBlock(SamTokenizer f) {
-        f.check("{");
+        f.check('{');
 
-        while (!f.check("}")) {
-            f.pushBack();
+        while (!f.test('}')) {
             getStatement(f);
         }
         return "";
@@ -62,7 +57,7 @@ public class BaliStatements {
     public static String getBreak(SamTokenizer f) {
         f.check("break");
 
-        if (!f.check(";")) {
+        if (!f.test(';')) {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
@@ -72,16 +67,18 @@ public class BaliStatements {
     public static String getWhile(SamTokenizer f) {
         f.check("while");
 
-        if (!f.check("(")) {
+        if (!f.test('(')) {
             System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
+        f.check('(');
         BaliExpression.getExp(f);
 
-        if (!f.check(")")) {
+        if (!f.test(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
+        f.check(')');
         getStatement(f);
         return "";
     }
@@ -89,23 +86,25 @@ public class BaliStatements {
     public static String getIf(SamTokenizer f) {
         f.check("if");
 
-        if (!f.check("(")) {
+        if (!f.test('(')) {
             System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
+        f.check('(');
         BaliExpression.getExp(f);
 
-        if (!f.check(")")) {
+        if (!f.test(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
+        f.check(')');
         getStatement(f);
 
-        if (!f.check("else")) {
+        if (!f.test("else")) {
             System.out.println("Expecting 'else' at line: " + f.lineNo());
             return null;
         }
-
+        f.check("else");
         getStatement(f);
         return null;
     }
@@ -113,10 +112,11 @@ public class BaliStatements {
     public static String getReturn(SamTokenizer f) {
         f.check("return");
         BaliExpression.getExp(f);
-        if (!f.check(";")) {
-            System.out.println("Expecting ';' at line: " + f.lineNo();)
+        if (!f.test(';')) {
+            System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
+        f.check(';');
         return null;
     }
 }

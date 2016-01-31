@@ -40,6 +40,7 @@ public class BaliCompiler
 		if (!f.check("int")) { //must match at begining
 			System.out.println("Invalid return type in method declaration at line: " + f.lineNo());
 		}
+
 		String methodName;
 		try {
 			methodName = f.getWord();
