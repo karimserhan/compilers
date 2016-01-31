@@ -41,7 +41,7 @@ public class BaliStatements {
             return null;
         }
         f.check('=');
-        BaliExpression.getExp(f);
+        BaliExpressions.getExp(f);
         return "";
     }
 
@@ -72,7 +72,7 @@ public class BaliStatements {
             return null;
         }
         f.check('(');
-        BaliExpression.getExp(f);
+        BaliExpressions.getExp(f);
 
         if (!f.test(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
@@ -91,7 +91,7 @@ public class BaliStatements {
             return null;
         }
         f.check('(');
-        BaliExpression.getExp(f);
+        BaliExpressions.getExp(f);
 
         if (!f.test(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
@@ -111,7 +111,7 @@ public class BaliStatements {
 
     public static String getReturn(SamTokenizer f) {
         f.check("return");
-        BaliExpression.getExp(f);
+        BaliExpressions.getExp(f);
         if (!f.test(';')) {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
