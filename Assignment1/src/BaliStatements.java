@@ -36,12 +36,20 @@ public class BaliStatements {
             System.out.println("Invalid variable name at line: " + f.lineNo());
             return null;
         }
-        if (!f.test("=")) {
+        if (!f.test('=')) {
             System.out.println("Expecting '=' at line: " + f.lineNo());
             return null;
         }
         f.check('=');
-        BaliExpressions.getExp(f);
+        String exp = BaliExpressions.getExp(f);
+        if (exp == null) { // ma akal
+            return null;
+        }
+
+        if (!f.check(';')) {
+            System.out.println("Expecting ';' at line: " + f.lineNo());
+            return null;
+        }
         return "";
     }
 
@@ -57,7 +65,7 @@ public class BaliStatements {
     public static String getBreak(SamTokenizer f) {
         f.check("break");
 
-        if (!f.test(';')) {
+        if (!f.check(';')) {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
@@ -67,18 +75,19 @@ public class BaliStatements {
     public static String getWhile(SamTokenizer f) {
         f.check("while");
 
-        if (!f.test('(')) {
+        if (!f.check('(')) {
             System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
-        f.check('(');
-        BaliExpressions.getExp(f);
+        String exp = BaliExpressions.getExp(f);
+        if (exp == null) {
+            return null;
+        }
 
-        if (!f.test(')')) {
+        if (!f.check(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
-        f.check(')');
         getStatement(f);
         return "";
     }
@@ -86,37 +95,40 @@ public class BaliStatements {
     public static String getIf(SamTokenizer f) {
         f.check("if");
 
-        if (!f.test('(')) {
+        if (!f.check('(')) {
             System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
-        f.check('(');
-        BaliExpressions.getExp(f);
+        String exp = BaliExpressions.getExp(f);
+        if (exp == null) {
+            return null;
+        }
 
-        if (!f.test(')')) {
+        if (!f.check(')')) {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
-        f.check(')');
         getStatement(f);
 
-        if (!f.test("else")) {
+        if (!f.check("else")) {
             System.out.println("Expecting 'else' at line: " + f.lineNo());
             return null;
         }
-        f.check("else");
         getStatement(f);
         return null;
     }
 
     public static String getReturn(SamTokenizer f) {
         f.check("return");
-        BaliExpressions.getExp(f);
-        if (!f.test(';')) {
+        String exp = BaliExpressions.getExp(f);
+        if (exp == null) {
+            return null;
+        }
+
+        if (!f.check(';')) {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
-        f.check(';');
         return null;
     }
 }

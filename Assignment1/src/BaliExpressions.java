@@ -6,8 +6,12 @@ public class BaliExpressions {
 
     public static String getExp(SamTokenizer f) {
         // Literal case
+        if(f.peekAtKind() == Tokenizer.TokenType.FLOAT) {
+            System.out.println("Floating point numbers are not supported; at line: " + f.lineNo());
+            return null;
+        }
         if(f.peekAtKind() == Tokenizer.TokenType.INTEGER) {
-            return f.getString();
+            return f.getInt() + "";
         }
         if(f.test("true")) {
             f.check("true");
@@ -51,25 +55,22 @@ public class BaliExpressions {
         f.check('(');
         String result;
 
-        // unary operators
-        if(f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
-            if (f.test('-')) {
-                f.check('-');
-                //Generate SAM code
-                result = "-" + getExp(f);
-            } else {
-                if (!f.check('!')) {
-                    System.out.println("Invalid unary operator at line: " + f.lineNo() + "- and ! are the only valid unary operators.");
-                    return null;
-                }
-                result = "!" + getExp(f);
+        if (f.test('-')) { // unary operator 1
+            f.check('-');
+            //Generate SAM code
+            result = "-" + getExp(f);
+        } else if (f.test('!')){ // unary operator 2
+            if (!f.check('!')) {
+                System.out.println("Invalid unary operator at line: " + f.lineNo() + ". - and ! are the only valid unary operators.");
+                return null;
             }
+            result = "!" + getExp(f);
         } else { //binary operators or single parenthesized expression
             result = getExp(f);
 
             // binrary operators
             if (f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
-                String op = f.getString();
+                char op = f.getOp();
                 // generate sam code
                 result += op + getExp(f);
             } else {// single parenthesized exression
