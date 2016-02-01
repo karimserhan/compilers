@@ -65,18 +65,30 @@ public class BaliExpressions {
         f.check('(');
         // get label of function
         String label;
+        int formalNbrOfParams;
         try {
             label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(methodName);
+            formalNbrOfParams = BaliCompiler.functionsLabelsMap.lookupNumberOfParameters(methodName);
         } catch (IllegalArgumentException exp) {
             System.out.println("Method not declared: " + methodName + " at line: " + f.lineNo());
             return null;
         }
+
+        // Variable to be passedto getActuals to return the number of actual parameters
+        // by reference
+        int[] actualNbrOfParamsArray = new int[1];
+
         // generate sam code
         samCode = "PUSHIMM 0\n"; // create return value slot
-        String actualsSamCode = getActuals(f); // push parameters on stack
+        String actualsSamCode = getActuals(f, actualNbrOfParamsArray); // push parameters on stack
         if (actualsSamCode == null) { // error, don't proceed
             return null;
         }
+        if (formalNbrOfParams != actualNbrOfParamsArray[0]) {
+            System.out.println("Argument list for function " + methodName + " does not match formal parameters. At line: " + f.lineNo());
+            return null;
+        }
+
         samCode += actualsSamCode;
         samCode += "LINK\n"; // save FBR
         samCode += "JSR " + label + "\n"; // jump to function
@@ -85,6 +97,10 @@ public class BaliExpressions {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
+
+        // clean up code after method was called
+        samCode += "POPFBR\n";
+        samCode += "ADDSP -" + actualNbrOfParamsArray[0] + "\n";
         return samCode; //fix duh
     }
 
@@ -167,9 +183,11 @@ public class BaliExpressions {
 
     }
 
-    private static String getActuals(SamTokenizer f) {
+    private static String getActuals(SamTokenizer f, int[] numberOfParameters) {
+        numberOfParameters[0] = 0;
         String samCode = "";
         while(!f.test(')')) {
+            numberOfParameters[0]++;
             String expression = getExp(f);
             if(expression == null) return null;
             if(!f.test(',')) {
