@@ -6,7 +6,6 @@ import edu.cornell.cs.sam.io.TokenizerException;
 public class BaliExpressions {
 
     public static String getExp(SamTokenizer f) {
-
         String samCode = "";
         // Literal case
         if(f.peekAtKind() == Tokenizer.TokenType.FLOAT) {
@@ -45,44 +44,53 @@ public class BaliExpressions {
         }
 
         if (f.test('(')) { // method call
-            f.check('(');
-            // get label of function
-            String label;
-            try {
-                label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(variableName);
-            } catch (IllegalArgumentException exp) {
-                System.out.println("Method not declared: " + variableName + " at line: " + f.lineNo());
-                return null;
-            }
-            // generate sam code
-            samCode = "PUSHIMM 0\n"; // create return value slot
-            String actualsSamCode = getActuals(f); // push parameters on stack
-            if (actualsSamCode == null) { // error, don't proceed
-                return null;
-            }
-            samCode += actualsSamCode;
-            samCode += "LINK\n"; // save FBR
-            samCode += "JSR " + label + "\n"; // jump to function
-
-            if (!f.check(')')) {
-                System.out.println("Expecting ')' at line: " + f.lineNo());
-                return null;
-            }
-            return samCode; //fix duh
+            return handleMethodCall(variableName, f);
         } else { // variable use
-            try {
-                int offset = BaliCompiler.currentSymbolTable.lookupOffsetForVariable(variableName);
-                return "PUSHOFF " + offset + "\n";
-            } catch (IllegalArgumentException exp) {
-                System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
-                return null;
-            }
+            return handleVariableUse(variableName, f);
         }
+    }
+
+    private static String handleVariableUse(String variableName, SamTokenizer f) {
+        try {
+            int offset = BaliCompiler.currentSymbolTable.lookupOffsetForVariable(variableName);
+            return "PUSHOFF " + offset + "\n";
+        } catch (IllegalArgumentException exp) {
+            System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
+            return null;
+        }
+    }
+
+    private static String handleMethodCall(String methodName, SamTokenizer f) {
+        String samCode;
+        f.check('(');
+        // get label of function
+        String label;
+        try {
+            label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(methodName);
+        } catch (IllegalArgumentException exp) {
+            System.out.println("Method not declared: " + methodName + " at line: " + f.lineNo());
+            return null;
+        }
+        // generate sam code
+        samCode = "PUSHIMM 0\n"; // create return value slot
+        String actualsSamCode = getActuals(f); // push parameters on stack
+        if (actualsSamCode == null) { // error, don't proceed
+            return null;
+        }
+        samCode += actualsSamCode;
+        samCode += "LINK\n"; // save FBR
+        samCode += "JSR " + label + "\n"; // jump to function
+
+        if (!f.check(')')) {
+            System.out.println("Expecting ')' at line: " + f.lineNo());
+            return null;
+        }
+        return samCode; //fix duh
     }
 
     private static String getParenthesizedExp(SamTokenizer f) {
         f.check('(');
-        String samCode="";
+        String samCode = "";
         if (f.test('-')) { // unary operator 1
             f.check('-');
             //Generate SAM code
