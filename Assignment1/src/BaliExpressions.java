@@ -47,8 +47,9 @@ public class BaliExpressions {
         if (f.test('(')) { // method call
             f.check('(');
             // get label of function
+            String label;
             try {
-                String label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(variableName);
+                label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(variableName);
             } catch (IllegalArgumentException exp) {
                 System.out.println("Method not declared: " + variableName + " at line: " + f.lineNo());
                 return null;
