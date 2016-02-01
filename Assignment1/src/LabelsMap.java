@@ -37,7 +37,6 @@ public class LabelsMap {
             String[] contents = result.split(",");
             return contents[0];
         }
-
         else{
             throw new IllegalArgumentException("Method not decalared");
         }
@@ -50,7 +49,6 @@ public class LabelsMap {
             int numberOfParams = Integer.parseInt(contents[1]);
             return numberOfParams;
         }
-
         else{
             throw new IllegalArgumentException("Number of params not found");
         }

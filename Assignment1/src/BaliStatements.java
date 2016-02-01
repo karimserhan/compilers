@@ -2,6 +2,9 @@ import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
 public class BaliStatements {
+    private static int lastLabelIndexUsed = 0;
+    private static String currentWhileLabel = null;
+
 
     public static String getStatement(SamTokenizer f) {
         if (f.test("return")) {
@@ -73,14 +76,18 @@ public class BaliStatements {
     }
 
     public static String getWhile(SamTokenizer f) {
+        currentWhileLabel = "whileLbl" + lastLabelIndexUsed;
+        lastLabelIndexUsed++;
+        String currentWhileLabelEnd = currentWhileLabel + "End";
+
         f.check("while");
 
         if (!f.check('(')) {
             System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
         }
-        String exp = BaliExpressions.getExp(f);
-        if (exp == null) {
+        String expSamCode = BaliExpressions.getExp(f);
+        if (expSamCode == null) {
             return null;
         }
 
@@ -88,7 +95,13 @@ public class BaliStatements {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
-        getStatement(f);
+
+        String samCode = currentWhileLabelEnd + ":\n";
+        samCode += expSamCode;
+        samCode += "ISNIL\n";
+        samCode += "JUMPC " + currentWhileLabelEnd;
+        samCode += getStatement(f);
+
         return "";
     }
 
