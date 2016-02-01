@@ -77,7 +77,10 @@ public class BaliStatements {
             System.out.println("Cannot have a break statement outside of a while loop, at line: " + f.lineNo());
             return null;
         }
-        return null;
+
+        String currentWhileLabelEnd = currentWhileLabel + "End";
+        String samCode = "JUMP " + currentWhileLabelEnd;
+        return samCode;
     }
 
     public static String getWhile(SamTokenizer f) {
