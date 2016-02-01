@@ -13,16 +13,14 @@ public class SymbolTable {
     public int lookupOffsetForVariable(String variableName){
         if(map.containsKey(variableName)){
 
-            if(initialized.get(variableName) == true){
+            if(initialized.get(variableName) == true) {
                 return map.get(variableName);
             }
-
-            else{
+            else {
                 throw new IllegalStateException("Variable not initialized");
             }
-
         }
-        else{
+        else {
             throw new IllegalArgumentException("Variable not declared");
         }
     }
@@ -37,6 +35,10 @@ public class SymbolTable {
         else{
             throw new IllegalStateException("Variable already defined");
         }
+    }
+
+    public void setVariableInitialized(String variableName) {
+        initialized.put(variableName, true);
     }
 
 }
