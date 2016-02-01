@@ -4,9 +4,13 @@ import edu.cornell.cs.sam.io.Tokenizer.TokenType;
 import edu.cornell.cs.sam.io.TokenizerException;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class BaliCompiler
 {
+
+	public static LabelsMap functionsLabelsMap = new LabelsMap();
+	
 	public static void main(String[] args) {
 		String baliFileName = "ex.bali";//args[0];
 		System.out.println(compiler(baliFileName));
