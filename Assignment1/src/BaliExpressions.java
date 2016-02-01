@@ -1,4 +1,5 @@
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import edu.cornell.cs.sam.core.Sys;
 import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
@@ -57,6 +58,11 @@ public class BaliExpressions {
         } catch (IllegalArgumentException exp) {
             System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
             return null;
+
+        }
+        catch (IllegalStateException exp){
+            System.out.println("Variable name " + variableName + "is already defined at line: " + f.lineNo());
+            return null;
         }
     }
 
@@ -69,6 +75,10 @@ public class BaliExpressions {
             label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(methodName);
         } catch (IllegalArgumentException exp) {
             System.out.println("Method not declared: " + methodName + " at line: " + f.lineNo());
+            return null;
+        }
+        catch (IllegalStateException exp){
+            System.out.println("Method name " + methodName +  " has already been defined at line: " + f.lineNo());
             return null;
         }
         // generate sam code

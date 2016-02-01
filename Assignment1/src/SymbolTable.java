@@ -20,7 +20,13 @@ public class SymbolTable {
     }
 
     public void createNewEntryForVariable(String variable, int offset){
-        map.put(variable, offset);
+        if(!map.containsKey(variable)){
+            map.put(variable, offset);
+        }
+
+        else{
+            throw new IllegalStateException("Variable already defined");
+        }
     }
 
 }
