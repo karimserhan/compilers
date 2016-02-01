@@ -183,6 +183,7 @@ public class BaliCompiler
 				String expression = BaliExpressions.getExp(f);
 				currentSymbolTable.setVariableInitialized(variableName);
 				int offset = currentSymbolTable.lookupOffsetForVariable(variableName);
+				samCode += expression;
 				samCode += "STOREOFF " + offset +"\n";
 
 				if (expression == null) {

@@ -7,29 +7,31 @@ public class BaliStatements {
 
 
     public static String getStatement(SamTokenizer f) {
+        String samCode;
         if (f.test("return")) {
-            String returnSamCode = getReturn(f);
-            if(returnSamCode == null) return null;
+            samCode = getReturn(f);
+            if(samCode == null) return null;
         } else if (f.test("if")) {
-            String ifSamCode = getIf(f);
-            if(ifSamCode == null) return null;
+            samCode = getIf(f);
+            if(samCode == null) return null;
         } else if (f.test("while")) {
-            String whileSamCode = getWhile(f);
-            if(whileSamCode == null) return null;
+            samCode = getWhile(f);
+            if(samCode == null) return null;
         } else if (f.test("break")) {
-            String breakSamCode = getBreak(f);
-            if(breakSamCode == null) return null;
+            samCode = getBreak(f);
+            if(samCode == null) return null;
         } else if (f.test('{')) {
-            String blockSamCode = getBlock(f);
-            if(blockSamCode == null) return null;
+            samCode = getBlock(f);
+            if(samCode == null) return null;
         }else if (f.test(';')) {
+            samCode = "";
             // do nothing
             f.check(';');
         } else { // hopefully an ASSIGN
-            String assignSamCode = getAssign(f);
-            if(assignSamCode == null) return null;
+            samCode = getAssign(f);
+            if(samCode == null) return null;
         }
-        return "";
+        return samCode;
     }
 
     public static String getAssign(SamTokenizer f) {
