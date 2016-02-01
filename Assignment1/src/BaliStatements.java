@@ -51,9 +51,7 @@ public class BaliStatements {
         if (expSamCode == null) { // ma akal
             return null;
         }
-        //Expression is complete
-        //Set variable to initialized
-        
+
 
         if (!f.check(';')) {
             System.out.println("Expecting ';' at line: " + f.lineNo());
@@ -62,6 +60,9 @@ public class BaliStatements {
 
         int offset;
         try {
+            //Expression is complete
+            //Set variable to initialized
+            BaliCompiler.currentSymbolTable.setVariableInitialized(writeVariable);
             offset = BaliCompiler.currentSymbolTable.lookupOffsetForVariable(writeVariable);
         } catch (IllegalArgumentException exp) {
             System.out.println("Variable not declared: " + writeVariable + " at line: " + f.lineNo());

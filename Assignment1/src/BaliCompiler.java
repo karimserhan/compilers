@@ -164,7 +164,7 @@ public class BaliCompiler
 		while(true) {
 			//Increment number of locals
 			currentNbrOfLocals++;
-			samCode += "PUSHIMM 0";
+			samCode += "PUSHIMM 0\n";
 			String variableName;
 
 			try {
@@ -174,12 +174,17 @@ public class BaliCompiler
 			} catch (TokenizerException e) {
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
+			} catch (IllegalStateException exp){
+				System.out.println("Variable already defined at line: " + f.lineNo());
+				return null;
 			}
 			if(f.test('=')) {
 				f.check('=');
 				String expression = BaliExpressions.getExp(f);
+				currentSymbolTable.setVariableInitialized(variableName);
 				int offset = currentSymbolTable.lookupOffsetForVariable(variableName);
-				samCode += "STOREOFF " + offset;
+				samCode += "STOREOFF " + offset +"\n";
+
 				if (expression == null) {
 					return null;
 				}

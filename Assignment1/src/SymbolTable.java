@@ -38,6 +38,9 @@ public class SymbolTable {
     }
 
     public void setVariableInitialized(String variableName) {
+        if(!map.containsKey(variableName)){
+            throw new IllegalArgumentException("Variable not declared");
+        }
         initialized.put(variableName, true);
     }
 
