@@ -1,17 +1,12 @@
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
 import java.util.HashMap;
 
-/**
- * Created by egantoun on 1/31/16.
- */
-public class LabelsMap {
+public class MethodLabelsMap {
 
     private HashMap<String, String>  map = new HashMap<String, String>();
     private int counter;
 
     //Default Constructor
-    public LabelsMap() {
+    public MethodLabelsMap() {
         counter = 0;
     }
 
@@ -23,7 +18,7 @@ public class LabelsMap {
     }
 
     //Create new Entry in Map
-    public String createNewEntryForFunction(String methodName, int numberOfParams){
+    public String createNewEntry(String methodName, int numberOfParams) {
         String methodLabel = generateNewLabel();
         String mehodValue = methodLabel + "," + numberOfParams;
         if(!map.containsKey(methodName)) {
@@ -35,7 +30,7 @@ public class LabelsMap {
     }
 
     //Get label for method
-    public String lookupLabelForFunction(String methodName){
+    public String lookupLabel(String methodName) {
         //return map.get(methodName);
         if(map.containsKey(methodName)){
             //return map.get(methodName);
@@ -43,12 +38,12 @@ public class LabelsMap {
             String[] contents = result.split(",");
             return contents[0];
         }
-        else{
+        else {
             throw new IllegalArgumentException("Method not decalared");
         }
     }
 
-    public int lookupNumberOfParameters(String methodName){
+    public int lookupNumberOfParameters(String methodName) {
         if(map.containsKey(methodName)){
             String result = map.get(methodName);
             String[] contents = result.split(",");

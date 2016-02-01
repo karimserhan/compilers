@@ -1,10 +1,5 @@
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
 import java.util.HashMap;
 
-/**
- * Created by egantoun on 1/31/16.
- */
 public class SymbolTable {
 
     private HashMap<String, Integer> map = new HashMap<String, Integer>();
@@ -43,5 +38,4 @@ public class SymbolTable {
         }
         initialized.put(variableName, true);
     }
-
 }
