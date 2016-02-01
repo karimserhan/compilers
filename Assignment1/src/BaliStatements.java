@@ -33,8 +33,9 @@ public class BaliStatements {
     }
 
     public static String getAssign(SamTokenizer f) {
+        String writeVariable;
         try {
-            String writeVariable = f.getWord();
+            writeVariable = f.getWord();
         } catch (TokenizerException exp) {
             System.out.println("Invalid variable name at line: " + f.lineNo());
             return null;
@@ -44,8 +45,8 @@ public class BaliStatements {
             return null;
         }
         f.check('=');
-        String exp = BaliExpressions.getExp(f);
-        if (exp == null) { // ma akal
+        String expSamCode = BaliExpressions.getExp(f);
+        if (expSamCode == null) { // ma akal
             return null;
         }
 
@@ -53,16 +54,34 @@ public class BaliStatements {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
+
+        int offset;
+        try {
+            offset = BaliCompiler.currentSymbolTable.lookupOffsetForVariable(writeVariable);
+        } catch (IllegalArgumentException exp) {
+            System.out.println("Variable not declared: " + writeVariable + " at line: " + f.lineNo());
+            return null;
+        }
+
+        // generate sam code
+        String samCode = expSamCode;
+        samCode += "STOREOFF " + offset + "\n";
         return "";
     }
 
     public static String getBlock(SamTokenizer f) {
+        String samCode = "";
         f.check('{');
 
         while (!f.test('}')) {
-            getStatement(f);
+            String stmtCode = getStatement(f);
+            if (stmtCode == null) {
+                return null;
+            }
+            samCode += stmtCode;
         }
-        return "";
+        
+        return samCode;
     }
 
     public static String getBreak(SamTokenizer f) {
@@ -72,7 +91,15 @@ public class BaliStatements {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
-        return null;
+
+        if (currentWhileLabel == null) {
+            System.out.println("Cannot have a break statement outside of a while loop, at line: " + f.lineNo());
+            return null;
+        }
+
+        String currentWhileLabelEnd = currentWhileLabel + "End";
+        String samCode = "JUMP " + currentWhileLabelEnd;
+        return samCode;
     }
 
     public static String getWhile(SamTokenizer f) {
@@ -99,10 +126,13 @@ public class BaliStatements {
         String samCode = currentWhileLabelEnd + ":\n";
         samCode += expSamCode;
         samCode += "ISNIL\n";
-        samCode += "JUMPC " + currentWhileLabelEnd;
+        samCode += "JUMPC " + currentWhileLabelEnd + "\n";
         samCode += getStatement(f);
+        samCode += "JUMP " + currentWhileLabel + "\n";
+        samCode += currentWhileLabelEnd;
 
-        return "";
+        currentWhileLabel = null;
+        return samCode;
     }
 
     public static String getIf(SamTokenizer f) {
