@@ -45,13 +45,24 @@ public class BaliExpressions {
 
         if (f.test('(')) { // method call
             f.check('(');
-            String actualsSamCode = getActuals(f);
-            if(actualsSamCode == null) return null;
+            // get label of function
+            String label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(variableName);
+
+            // generate sam code
+            samCode = "PUSHIMM 0\n"; // create return value slot
+            String actualsSamCode = getActuals(f); // push parameters on stack
+            if (actualsSamCode == null) { // error, don't proceed
+                return null;
+            }
+            samCode += actualsSamCode;
+            samCode += "LINK\n"; // save FBR
+            samCode += "JSR " + label + "\n"; // jump to function
+
             if (!f.check(')')) {
                 System.out.println("Expecting ')' at line: " + f.lineNo());
                 return null;
             }
-            return ""; //fix duh
+            return samCode; //fix duh
         } else { // variable use
             return variableName;
         }
@@ -137,7 +148,7 @@ public class BaliExpressions {
     }
 
     private static String getActuals(SamTokenizer f) {
-
+        String samCode = "";
         while(!f.test(')')) {
             String expression = getExp(f);
             if(expression == null) return null;
@@ -146,7 +157,8 @@ public class BaliExpressions {
             } else {
                 f.check(',');
             }
+            samCode += expression;
         }
-        return "";
+        return samCode;
     }
 }
