@@ -127,7 +127,13 @@ public class BaliCompiler
 		// store parameters in symbol table
 		int n = paramsList.size();
 		for (String param : paramsList) {
-			BaliCompiler.currentSymbolTable.createNewEntryForVariable(param, -n);
+			try {
+				BaliCompiler.currentSymbolTable.createNewEntryForVariable(param, -n);
+				BaliCompiler.currentSymbolTable.setVariableInitialized(param);
+			} catch (IllegalStateException exp) {
+				System.out.println("Variable already defined at line: " + f.lineNo());
+				return -1;
+			}
 			n--;
 		}
 
