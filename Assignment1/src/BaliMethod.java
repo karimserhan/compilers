@@ -25,7 +25,7 @@ public class BaliMethod {
 
     public String getMethod() {
         if (!tokenizer.check("int")) { //must match at begining
-            System.out.println("ERROR: Invalid return type in method declaration at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Invalid return type in method declaration at line: " + tokenizer.nextLineNo());
             return null;
         }
 

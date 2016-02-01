@@ -4,8 +4,8 @@ import edu.cornell.cs.sam.io.TokenizerException;
 
 public class BaliStatement {
     private SamTokenizer tokenizer;
-    private int lastLabelIndexUsed = 0;
-    private String currentWhileLabel = null;
+    private static int lastLabelIndexUsed = 0;
+    private static String currentWhileLabel = null;
     private BaliMethod.MethodMetaData methodMeta;
     private boolean doesReturn;
 
@@ -160,7 +160,7 @@ public class BaliStatement {
             return null;
         }
 
-        String samCode = currentWhileLabelEnd + ":\n";
+        String samCode = currentWhileLabel + ":\n";
         samCode += expSamCode;
         samCode += "\tISNIL\n";
         samCode += "\tJUMPC " + currentWhileLabelEnd + "\n";

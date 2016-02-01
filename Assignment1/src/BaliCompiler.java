@@ -18,17 +18,19 @@ public class BaliCompiler {
 		String samCode = compile(baliFileName);
 
 		// write to SaM file
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(args[1], "UTF-8");
+			writer.println(samCode == null ? "" : samCode);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Fatal error: could not write to output file");
+		} catch (UnsupportedEncodingException e) {
+			System.out.println("Fatal error: could not write to output file");
+		}
+
 		if (samCode != null) {
-			PrintWriter writer = null;
-			try {
-				writer = new PrintWriter(args[1], "UTF-8");
-				writer.println(samCode);
-				writer.close();
-			} catch (FileNotFoundException e) {
-				System.out.println("Fatal error: could not write to output file");
-			} catch (UnsupportedEncodingException e) {
-				System.out.println("Fatal error: could not write to output file");
-			}
+			System.out.println("Compilation succeeded");
 		}
 	}
 

@@ -73,12 +73,21 @@ public class BaliExpression {
             samCode = getExp();
             samCode += "\tISNIL\n";
         } else { //binary operators or single parenthesized expression
-            samCode = getExp();
+            // read first expression
+            String expSamCode = getExp();
+            if (expSamCode == null) {
+                return null;
+            }
+            samCode = expSamCode;
 
-            // binrary operators
-            if (nextTokenIsBinaryOp()) {
+            if (nextTokenIsBinaryOp()) { // binrary operators
                 char op = tokenizer.getOp();
-                samCode +=  getExp();
+                // read second expression
+                expSamCode = getExp();
+                if (expSamCode == null) {
+                    return null;
+                }
+                samCode +=  expSamCode;
                 samCode += handleBinaryOp(op);
             } else {// single parenthesized exression
             }
@@ -192,12 +201,12 @@ public class BaliExpression {
             numberOfParameters[0]++;
             String expression = getExp();
             if(expression == null) return null;
+            samCode += expression;
             if(!tokenizer.test(',')) {
                 break;
             } else {
                 tokenizer.check(',');
             }
-            samCode += expression;
         }
         return samCode;
     }
