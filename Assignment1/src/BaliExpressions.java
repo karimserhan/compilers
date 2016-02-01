@@ -5,21 +5,27 @@ import edu.cornell.cs.sam.io.TokenizerException;
 public class BaliExpressions {
 
     public static String getExp(SamTokenizer f) {
+
+        String samCode = "";
         // Literal case
         if(f.peekAtKind() == Tokenizer.TokenType.FLOAT) {
             System.out.println("Floating point numbers are not supported; at line: " + f.lineNo());
             return null;
         }
         if(f.peekAtKind() == Tokenizer.TokenType.INTEGER) {
-            return f.getInt() + "";
+            int value = f.getInt();
+            samCode = "PUSHIMM" +  " " + value + "\n";
+            return samCode;
         }
         if(f.test("true")) {
             f.check("true");
-            return "1";
+            samCode = "PUSHIMM 1" + "\n";
+            return samCode;
         }
         if(f.test("false")) {
             f.check("false");
-            return "0";
+            samCode = "PUSHIMM 0" + "\n";
+            return samCode;
         }
 
         // not a literal case
@@ -53,28 +59,30 @@ public class BaliExpressions {
 
     private static String getParenthesizedExp(SamTokenizer f) {
         f.check('(');
-        String result;
-
+        String samCode="";
         if (f.test('-')) { // unary operator 1
             f.check('-');
             //Generate SAM code
-            result = "-" + getExp(f);
+            samCode = getExp(f);
+            samCode += "PUSHIMM -1\n";
+            samCode += "TIMES\n";
+
         } else if (f.test('!')){ // unary operator 2
             if (!f.check('!')) {
                 System.out.println("Invalid unary operator at line: " + f.lineNo() + ". - and ! are the only valid unary operators.");
                 return null;
             }
-            result = "!" + getExp(f);
+            samCode = getExp(f);
+            samCode += "ISNIL\n";
         } else { //binary operators or single parenthesized expression
-            result = getExp(f);
+            samCode = getExp(f);
 
             // binrary operators
             if (f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
                 char op = f.getOp();
-                // generate sam code
-                result += op + getExp(f);
+                samCode +=  getExp(f);
+                samCode += handleBinaryOp(op);
             } else {// single parenthesized exression
-
             }
         }
         // eat up the remaining )
@@ -83,7 +91,43 @@ public class BaliExpressions {
             return null;
         }
 
-        return result;
+        return samCode;
+    }
+
+    private static String handleBinaryOp(char op) {
+        String samCode ="";
+        switch (op){
+            case '+':
+                samCode += "ADD\n";
+                break;
+            case '-':
+                samCode += "SUB\n";
+                break;
+            case '*':
+                samCode += "TIMES\n";
+                break;
+            case '/':
+                samCode += "DIV\n";
+                break;
+            case '&':
+                samCode += "AND\n";
+                break;
+            case '|':
+                samCode += "OR\n";
+                break;
+            case '<':
+                samCode += "LESS\n";
+                break;
+            case '>':
+                samCode += "GREATER\n";
+                break;
+            case '=':
+                samCode += "EQUAL\n";
+                break;
+        }
+
+        return samCode;
+
     }
 
     private static String getActuals(SamTokenizer f) {
