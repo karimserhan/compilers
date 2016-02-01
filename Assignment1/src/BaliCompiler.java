@@ -203,7 +203,7 @@ public class BaliCompiler
 		}
 
 		//Need to change
-		return "";
+		return samCode;
 	}
 }
 

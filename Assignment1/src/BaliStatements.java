@@ -1,6 +1,5 @@
 import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
-import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 public class BaliStatements {
     private static int lastLabelIndexUsed = 0;
