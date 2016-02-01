@@ -5,7 +5,7 @@ public class SymbolTable {
     private HashMap<String, Integer> map = new HashMap<String, Integer>();
     private HashMap<String, Boolean> initialized = new HashMap<String, Boolean>();
 
-    public int lookupOffsetForVariable(String variableName){
+    public int lookupOffset(String variableName){
         if(map.containsKey(variableName)){
 
             if(initialized.get(variableName) == true) {
@@ -20,7 +20,7 @@ public class SymbolTable {
         }
     }
 
-    public void createNewEntryForVariable(String variable, int offset){
+    public void createNewEntry(String variable, int offset){
         if(!map.containsKey(variable)){
             map.put(variable, offset);
             initialized.put(variable, false);
@@ -32,7 +32,7 @@ public class SymbolTable {
         }
     }
 
-    public void setVariableInitialized(String variableName) {
+    public void markVariableInitialized(String variableName) {
         if(!map.containsKey(variableName)){
             throw new IllegalArgumentException("Variable not declared");
         }

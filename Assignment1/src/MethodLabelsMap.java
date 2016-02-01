@@ -3,26 +3,13 @@ import java.util.HashMap;
 public class MethodLabelsMap {
 
     private HashMap<String, String>  map = new HashMap<String, String>();
-    private int counter;
-
-    //Default Constructor
-    public MethodLabelsMap() {
-        counter = 0;
-    }
-
-    //Generate New Label
-    private String generateNewLabel() {
-        String newLabel = "FunctionLabel" +  Integer.toString(counter);
-        counter++;
-        return newLabel;
-    }
 
     //Create new Entry in Map
     public String createNewEntry(String methodName, int numberOfParams) {
-        String methodLabel = generateNewLabel();
-        String mehodValue = methodLabel + "," + numberOfParams;
+        String methodLabel = methodName; // use method name as the label
+        String value = methodLabel + "," + numberOfParams;
         if(!map.containsKey(methodName)) {
-            map.put(methodName, mehodValue);
+            map.put(methodName, value);
         } else{
             throw new IllegalStateException("Duplicate method name");
         }

@@ -25,7 +25,7 @@ public class BaliMethod {
 
     public String getMethod() {
         if (!tokenizer.check("int")) { //must match at begining
-            System.out.println("Invalid return type in method declaration at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Invalid return type in method declaration at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -33,12 +33,13 @@ public class BaliMethod {
         try {
             methodName = tokenizer.getWord();
         } catch (TokenizerException exp) {
-            System.out.println("Invalid method name at line " + tokenizer.lineNo());
+            System.out.println("ERROR: Invalid method name at line " + tokenizer.lineNo());
             return null;
         }
 
         if (!tokenizer.check('(')) { // must be an opening parenthesis
-            System.out.println("Expecting '(' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting '(' at line: " + tokenizer.lineNo());
+            return null;
         }
         metaData.nbrOfFormals = getFormals();
         if (metaData.nbrOfFormals == -1) { // handled error occured
@@ -50,18 +51,20 @@ public class BaliMethod {
                 .createNewEntry(methodName, metaData.nbrOfFormals);
 
         if (!tokenizer.check(')')) {  // must be an closing parenthesis
-            System.out.println("Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
+            return  null;
         }
 
         if (!tokenizer.check('{')) { // must have an opening brace
-            System.out.println("Expecting '{' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting '{' at line: " + tokenizer.lineNo());
+            return null;
         }
         String body = getBody();
         if (body == null) { // handled error occured
             return null;
         }
         if (!tokenizer.check('}')) {// must have a closing brace
-            System.out.println("Expecting '}' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting '}' at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -76,14 +79,14 @@ public class BaliMethod {
         // parse the parameters
         while(!tokenizer.test(')')) {
             if (!tokenizer.check("int")) {
-                System.out.println("Expecting type (int) at line: " + tokenizer.lineNo());
+                System.out.println("ERROR: Expecting type (int) at line: " + tokenizer.lineNo());
                 return -1;
             }
             try {
                 String argName = tokenizer.getWord();
                 paramsList.add(argName);
             } catch (TokenizerException e) {
-                System.out.println("Invalid variable name at line: " + tokenizer.lineNo());
+                System.out.println("ERROR: Invalid variable name at line: " + tokenizer.lineNo());
                 return -1;
             }
             if (!tokenizer.test(',')) {
@@ -97,10 +100,10 @@ public class BaliMethod {
         int n = paramsList.size();
         for (String param : paramsList) {
             try {
-                metaData.symbolTable.createNewEntryForVariable(param, -n);
-                metaData.symbolTable.setVariableInitialized(param);
+                metaData.symbolTable.createNewEntry(param, -n);
+                metaData.symbolTable.markVariableInitialized(param);
             } catch (IllegalStateException exp) {
-                System.out.println("Variable already defined at line: " + tokenizer.lineNo());
+                System.out.println("ERROR: Variable already defined at line: " + tokenizer.lineNo());
                 return -1;
             }
             n--;
@@ -118,16 +121,36 @@ public class BaliMethod {
             }
             samCode += decl;
         }
+
+        boolean doesReturn = false;
+        boolean printedWarningMsg = false;
+
         while (!tokenizer.test('}')) {
             if (tokenizer.peekAtKind() == Tokenizer.TokenType.EOF) {
-                System.out.println("Expecting '}' at line: " + (tokenizer.lineNo() + 1));
+                System.out.println("ERROR: Expecting '}' at line: " + (tokenizer.lineNo() + 1));
                 return null;
             }
-            String stmt = new BaliStatement(tokenizer, metaData).getStatement();
-            if (stmt == null) {
+            // print warning message
+            if (doesReturn && !printedWarningMsg) {
+                System.out.println("WARNING: unreachable code, line: " + tokenizer.nextLineNo());
+                printedWarningMsg = true;
+            }
+            // parse statement
+            BaliStatement stmt = new BaliStatement(tokenizer, metaData);
+            String stmtSamCode = stmt.getStatement();
+            if (stmtSamCode == null) {
                 return null;
             }
-            samCode += stmt;
+            // set return flag
+            if (stmt.doesReturn()) {
+                doesReturn = true;
+            }
+            samCode += stmtSamCode;
+        }
+
+        if (!doesReturn) {
+            System.out.println("ERROR: Not all control paths return a value. At line: " + tokenizer.lineNo());
+            return null;
         }
         return samCode;
     }
@@ -139,27 +162,27 @@ public class BaliMethod {
         while(true) {
             //Increment number of locals
             metaData.nbrOfLocals++;
-            samCode += "PUSHIMM 0\n";
+            samCode += "\tPUSHIMM 0\n";
             String variableName;
 
             try {
                 variableName = tokenizer.getWord();
                 //Add variable to the Symbol Table
-                metaData.symbolTable.createNewEntryForVariable(variableName, metaData.nbrOfLocals + 1);
+                metaData.symbolTable.createNewEntry(variableName, metaData.nbrOfLocals + 1);
             } catch (TokenizerException e) {
-                System.out.println("Invalid variable name at line: " + tokenizer.lineNo());
+                System.out.println("ERROR: Invalid variable name at line: " + tokenizer.lineNo());
                 return null;
             } catch (IllegalStateException exp){
-                System.out.println("Variable already defined at line: " + tokenizer.lineNo());
+                System.out.println("ERROR: Variable already defined at line: " + tokenizer.lineNo());
                 return null;
             }
             if(tokenizer.test('=')) {
                 tokenizer.check('=');
                 String expression = new BaliExpression(tokenizer, metaData).getExp();
-                metaData.symbolTable.setVariableInitialized(variableName);
-                int offset = metaData.symbolTable.lookupOffsetForVariable(variableName);
+                metaData.symbolTable.markVariableInitialized(variableName);
+                int offset = metaData.symbolTable.lookupOffset(variableName);
                 samCode += expression;
-                samCode += "STOREOFF " + offset +"\n";
+                samCode += "\tSTOREOFF " + offset +"\n";
 
                 if (expression == null) {
                     return null;
@@ -174,7 +197,7 @@ public class BaliMethod {
         }
 
         if(!tokenizer.check(';')) {
-            System.out.println("Expecting ';' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting ';' at line: " + tokenizer.lineNo());
             return null;
         }
 

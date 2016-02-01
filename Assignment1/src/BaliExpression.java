@@ -15,22 +15,22 @@ public class BaliExpression {
         String samCode = "";
         // Literal case
         if(tokenizer.peekAtKind() == Tokenizer.TokenType.FLOAT) {
-            System.out.println("Floating point numbers are not supported; at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Floating point numbers are not supported; at line: " + tokenizer.lineNo());
             return null;
         }
         if(tokenizer.peekAtKind() == Tokenizer.TokenType.INTEGER) {
             int value = tokenizer.getInt();
-            samCode = "PUSHIMM" +  " " + value + "\n";
+            samCode = "\tPUSHIMM" +  " " + value + "\n";
             return samCode;
         }
         if(tokenizer.test("true")) {
             tokenizer.check("true");
-            samCode = "PUSHIMM 1" + "\n";
+            samCode = "\tPUSHIMM 1" + "\n";
             return samCode;
         }
         if(tokenizer.test("false")) {
             tokenizer.check("false");
-            samCode = "PUSHIMM 0" + "\n";
+            samCode = "\tPUSHIMM 0" + "\n";
             return samCode;
         }
 
@@ -45,7 +45,7 @@ public class BaliExpression {
             variableName = tokenizer.getWord();
         }
         catch (TokenizerException e) {
-            System.out.println("Invalid variable name at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Invalid variable name at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -63,15 +63,15 @@ public class BaliExpression {
             tokenizer.check('-');
             //Generate SAM code
             samCode = getExp();
-            samCode += "PUSHIMM -1\n";
-            samCode += "TIMES\n";
+            samCode += "\tPUSHIMM -1\n";
+            samCode += "\tTIMES\n";
         } else if (tokenizer.test('!')){ // unary operator '!'
             if (!tokenizer.check('!')) {
-                System.out.println("Invalid unary operator at line: " + tokenizer.lineNo() + ". - and ! are the only valid unary operators.");
+                System.out.println("ERROR: Invalid unary operator at line: " + tokenizer.lineNo() + ". - and ! are the only valid unary operators.");
                 return null;
             }
             samCode = getExp();
-            samCode += "ISNIL\n";
+            samCode += "\tISNIL\n";
         } else { //binary operators or single parenthesized expression
             samCode = getExp();
 
@@ -86,7 +86,7 @@ public class BaliExpression {
 
         // eat up the remaining )
         if (!tokenizer.check(')')) {
-            System.out.println("Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -97,31 +97,31 @@ public class BaliExpression {
         String samCode ="";
         switch (op){
             case '+':
-                samCode += "ADD\n";
+                samCode += "\tADD\n";
                 break;
             case '-':
-                samCode += "SUB\n";
+                samCode += "\tSUB\n";
                 break;
             case '*':
-                samCode += "TIMES\n";
+                samCode += "\tTIMES\n";
                 break;
             case '/':
-                samCode += "DIV\n";
+                samCode += "\tDIV\n";
                 break;
             case '&':
-                samCode += "AND\n";
+                samCode += "\tAND\n";
                 break;
             case '|':
-                samCode += "OR\n";
+                samCode += "\tOR\n";
                 break;
             case '<':
-                samCode += "LESS\n";
+                samCode += "\tLESS\n";
                 break;
             case '>':
-                samCode += "GREATER\n";
+                samCode += "\tGREATER\n";
                 break;
             case '=':
-                samCode += "EQUAL\n";
+                samCode += "\tEQUAL\n";
                 break;
         }
 
@@ -130,13 +130,13 @@ public class BaliExpression {
 
     private String handleVariableUse(String variableName) {
         try {
-            int offset = methodMeta.symbolTable.lookupOffsetForVariable(variableName);
-            return "PUSHOFF " + offset + "\n";
+            int offset = methodMeta.symbolTable.lookupOffset(variableName);
+            return "\tPUSHOFF " + offset + "\n";
         } catch (IllegalArgumentException exp) {
-            System.out.println("Variable not declared: " + variableName + " at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Variable not declared: " + variableName + " at line: " + tokenizer.lineNo());
             return null;
         } catch (IllegalStateException exp) {
-            System.out.println("Variable " + variableName + " used before being initialized. At line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Variable " + variableName + " used before being initialized. At line: " + tokenizer.lineNo());
             return null;
         }
     }
@@ -151,7 +151,7 @@ public class BaliExpression {
             label = BaliCompiler.methodLabelsMap.lookupLabel(methodName);
             nbrOfFormals = BaliCompiler.methodLabelsMap.lookupNumberOfParameters(methodName);
         } catch (IllegalArgumentException exp) {
-            System.out.println("Method not declared: " + methodName + " at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Method not declared: " + methodName + " at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -160,28 +160,28 @@ public class BaliExpression {
         int[] nbrOfActualsArr = new int[1];
 
         // generate sam code
-        samCode = "PUSHIMM 0\n"; // create return value slot
+        samCode = "\tPUSHIMM 0\n"; // create return value slot
         String actualsSamCode = getActuals(nbrOfActualsArr); // push parameters on stack
         if (actualsSamCode == null) { // error, don't proceed
             return null;
         }
         if (nbrOfFormals != nbrOfActualsArr[0]) {
-            System.out.println("Argument list for function " + methodName + " does not match formal parameters. At line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Argument list for function " + methodName + " does not match formal parameters. At line: " + tokenizer.lineNo());
             return null;
         }
 
         samCode += actualsSamCode;
-        samCode += "LINK\n"; // save FBR
-        samCode += "JSR " + label + "\n"; // jump to function
+        samCode += "\tLINK\n"; // save FBR
+        samCode += "\tJSR " + label + "\n"; // jump to function
 
         if (!tokenizer.check(')')) {
-            System.out.println("Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
             return null;
         }
 
         // clean up code after method was called
-        samCode += "POPFBR\n";
-        samCode += "ADDSP -" + nbrOfActualsArr[0] + "\n";
+        samCode += "\tPOPFBR\n";
+        samCode += "\tADDSP -" + nbrOfActualsArr[0] + "\n";
         return samCode; //fix duh
     }
 
