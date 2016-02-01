@@ -23,8 +23,8 @@ public class LabelsMap {
     }
 
     //Create new Entry in Map
-    public void createNewEntryForFunction(String methodName){
-        String methodLabel = generateNewLabel();
+    public void createNewEntryForFunction(String methodName, int numberOfParams){
+        String methodLabel = generateNewLabel() + "," + numberOfParams;
         map.put(methodName, methodLabel);
     }
 
@@ -32,11 +32,27 @@ public class LabelsMap {
     public String lookupLabelForFunction(String methodName){
         //return map.get(methodName);
         if(map.containsKey(methodName)){
-            return map.get(methodName);
+            //return map.get(methodName);
+            String result = map.get(methodName);
+            String[] contents = result.split(",");
+            return contents[0];
         }
 
         else{
             throw new IllegalArgumentException("Method not decalared");
+        }
+    }
+
+    public int lookupNumberOfParameters(String methodName){
+        if(map.containsKey(methodName)){
+            String result = map.get(methodName);
+            String[] contents = result.split(",");
+            int numberOfParams = Integer.parseInt(contents[1]);
+            return numberOfParams;
+        }
+
+        else{
+            throw new IllegalArgumentException("Number of params not found");
         }
     }
 }
