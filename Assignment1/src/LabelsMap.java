@@ -1,3 +1,5 @@
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.util.HashMap;
 
 /**
@@ -15,7 +17,7 @@ public class LabelsMap {
 
     //Generate New Label
     private String generateNewLabel() {
-        String newLabel = "FunctionLabel" Integer.toString(counter);
+        String newLabel = "FunctionLabel" +  Integer.toString(counter);
         counter++;
         return newLabel;
     }
@@ -28,6 +30,13 @@ public class LabelsMap {
 
     //Get label for method
     public String lookupLabelForFunction(String methodName){
-        return map.get(methodName);
+        //return map.get(methodName);
+        if(map.containsKey(methodName)){
+            return map.get(methodName);
+        }
+
+        else{
+            throw new IllegalArgumentException("Method not decalared");
+        }
     }
 }
