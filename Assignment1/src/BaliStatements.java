@@ -108,6 +108,7 @@ public class BaliStatements {
     public static String getIf(SamTokenizer f) {
         f.check("if");
 
+        String samCode = "";
         if (!f.check('(')) {
             System.out.println("Expecting '(' at line: " + f.lineNo());
             return null;
@@ -121,14 +122,32 @@ public class BaliStatements {
             System.out.println("Expecting ')' at line: " + f.lineNo());
             return null;
         }
-        getStatement(f);
+        //Get statement for if block
+        String ifStatement = getStatement(f);
 
         if (!f.check("else")) {
             System.out.println("Expecting 'else' at line: " + f.lineNo());
             return null;
         }
-        getStatement(f);
-        return null;
+
+        //Get statement for else block
+        String elseStatement = getStatement(f);
+
+        //Create label for if
+        String ifLbl = "ifLbl" + lastLabelIndexUsed;
+        lastLabelIndexUsed++;
+        samCode += "JUMPC " + ifLbl + "\n";
+        //Add else block
+        samCode += elseStatement;
+
+        String ifEndLbl = "ifEndLbl" + lastLabelIndexUsed;
+        lastLabelIndexUsed++;
+        samCode += "JUMP " + ifEndLbl;
+        samCode += ifLbl + ":\n";
+        samCode += ifStatement;
+        samCode += ifEndLbl + ":\n";
+
+        return samCode;
     }
 
     public static String getReturn(SamTokenizer f) {
