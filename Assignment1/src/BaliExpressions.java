@@ -78,7 +78,7 @@ public class BaliExpressions {
             samCode = getExp(f);
 
             // binrary operators
-            if (f.peekAtKind() == Tokenizer.TokenType.OPERATOR) {
+            if (nextTokenIsBinaryOp(f)) {
                 char op = f.getOp();
                 samCode +=  getExp(f);
                 samCode += handleBinaryOp(op);
@@ -92,6 +92,12 @@ public class BaliExpressions {
         }
 
         return samCode;
+    }
+
+    private static boolean nextTokenIsBinaryOp(SamTokenizer f) {
+        return f.test('+') || f.test('-') || f.test('*') || f.test('/')
+                || f.test('&') || f.test('|') || f.test('<') || f.test('>')
+                || f.test('=');
     }
 
     private static String handleBinaryOp(char op) {
