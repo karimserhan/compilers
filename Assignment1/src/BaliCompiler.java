@@ -8,9 +8,10 @@ import java.util.HashMap;
 
 public class BaliCompiler
 {
-
 	public static LabelsMap functionsLabelsMap = new LabelsMap();
 	public static SymbolTable currentSymbolTable = new SymbolTable();
+	public static int currentNbrOfFormals;
+	public static int currentNbrOfLocals;
 
 	public static void main(String[] args) {
 		String baliFileName = "ex.bali";//args[0];

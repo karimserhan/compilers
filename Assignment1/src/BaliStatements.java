@@ -165,7 +165,7 @@ public class BaliStatements {
 
         //Create label for if
         String ifLbl = "ifLbl" + lastLabelIndexUsed;
-        lastLabelIndexUsed++;
+        samCode += exp;
         samCode += "JUMPC " + ifLbl + "\n";
         //Add else block
         samCode += elseStatement;
@@ -182,8 +182,8 @@ public class BaliStatements {
 
     public static String getReturn(SamTokenizer f) {
         f.check("return");
-        String exp = BaliExpressions.getExp(f);
-        if (exp == null) {
+        String expSamCode = BaliExpressions.getExp(f);
+        if (expSamCode == null) {
             return null;
         }
 
@@ -191,6 +191,11 @@ public class BaliStatements {
             System.out.println("Expecting ';' at line: " + f.lineNo());
             return null;
         }
-        return "";
+
+        String samCode = expSamCode;
+        samCode += "STOREOFF -" + (BaliCompiler.currentNbrOfFormals + 1) +"\n";
+        samCode += "ADDSP -" + (BaliCompiler.currentNbrOfLocals) + "\n";
+        samCode += "JUMPIND\n";
+        return samCode;
     }
 }
