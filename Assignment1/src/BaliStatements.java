@@ -1,5 +1,6 @@
 import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
+import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 public class BaliStatements {
     private static int lastLabelIndexUsed = 0;
@@ -44,11 +45,15 @@ public class BaliStatements {
             System.out.println("Expecting '=' at line: " + f.lineNo());
             return null;
         }
+
         f.check('=');
         String expSamCode = BaliExpressions.getExp(f);
         if (expSamCode == null) { // ma akal
             return null;
         }
+        //Expression is complete
+        //Set variable to initialized
+        
 
         if (!f.check(';')) {
             System.out.println("Expecting ';' at line: " + f.lineNo());
