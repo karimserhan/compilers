@@ -57,9 +57,6 @@ public class BaliExpressions {
         } catch (IllegalArgumentException exp) {
             System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
             return null;
-        } catch (IllegalStateException exp){
-            System.out.println("Variable name " + variableName + "is already defined at line: " + f.lineNo());
-            return null;
         }
     }
 
@@ -74,9 +71,6 @@ public class BaliExpressions {
             formalNbrOfParams = BaliCompiler.functionsLabelsMap.lookupNumberOfParameters(methodName);
         } catch (IllegalArgumentException exp) {
             System.out.println("Method not declared: " + methodName + " at line: " + f.lineNo());
-            return null;
-        } catch (IllegalStateException exp){
-            System.out.println("Method name " + methodName +  " has already been defined at line: " + f.lineNo());
             return null;
         }
 
