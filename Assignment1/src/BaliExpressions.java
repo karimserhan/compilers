@@ -57,6 +57,9 @@ public class BaliExpressions {
         } catch (IllegalArgumentException exp) {
             System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
             return null;
+        } catch (IllegalStateException exp) {
+            System.out.println("Variable " + variableName + " used before being initialized. At line: " + f.lineNo());
+            return null;
         }
     }
 

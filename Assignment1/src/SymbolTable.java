@@ -13,7 +13,6 @@ public class SymbolTable {
         if(map.containsKey(variableName)){
             return map.get(variableName);
         }
-
         else{
             throw new IllegalArgumentException("Variable not declared");
         }

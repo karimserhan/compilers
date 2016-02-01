@@ -129,7 +129,7 @@ public class BaliStatements {
         samCode += "JUMPC " + currentWhileLabelEnd + "\n";
         samCode += getStatement(f);
         samCode += "JUMP " + currentWhileLabel + "\n";
-        samCode += currentWhileLabelEnd;
+        samCode += currentWhileLabelEnd + ":\n";
 
         currentWhileLabel = null;
         return samCode;
