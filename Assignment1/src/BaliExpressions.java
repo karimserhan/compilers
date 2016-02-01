@@ -57,6 +57,9 @@ public class BaliExpressions {
         } catch (IllegalArgumentException exp) {
             System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
             return null;
+        } catch (IllegalStateException exp){
+            System.out.println("Variable name " + variableName + "is already defined at line: " + f.lineNo());
+            return null;
         }
     }
 
@@ -72,9 +75,12 @@ public class BaliExpressions {
         } catch (IllegalArgumentException exp) {
             System.out.println("Method not declared: " + methodName + " at line: " + f.lineNo());
             return null;
+        } catch (IllegalStateException exp){
+            System.out.println("Method name " + methodName +  " has already been defined at line: " + f.lineNo());
+            return null;
         }
 
-        // Variable to be passedto getActuals to return the number of actual parameters
+        // Variable to be passed to getActuals to return the number of actual parameters
         // by reference
         int[] actualNbrOfParamsArray = new int[1];
 
