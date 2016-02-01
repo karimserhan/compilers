@@ -4,7 +4,9 @@ import edu.cornell.cs.sam.io.Tokenizer.TokenType;
 import edu.cornell.cs.sam.io.TokenizerException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class BaliCompiler
 {
@@ -30,7 +32,7 @@ public class BaliCompiler
 			return "STOP\n";
 		}
 	}
-	
+
 	public static String getProgram(SamTokenizer f) {
 		try {
 			String pgm="";
@@ -48,6 +50,11 @@ public class BaliCompiler
 	}
 
 	public static String getMethod(SamTokenizer f) {
+		// reset function state
+		BaliCompiler.currentNbrOfLocals = 0;
+		BaliCompiler.currentNbrOfFormals = 0;
+		BaliCompiler.currentSymbolTable = new SymbolTable();
+
 		if (!f.check("int")) { //must match at begining
 			System.out.println("Invalid return type in method declaration at line: " + f.lineNo());
 			return null;
@@ -64,10 +71,14 @@ public class BaliCompiler
 		if (!f.check('(')) { // must be an opening parenthesis
 			System.out.println("Expecting '(' at line: " + f.lineNo());
 		}
-		String formals = getFormals(f);
-		if (formals == null) { // handled error occured
+		int nbrOfFormals = getFormals(f);
+		if (nbrOfFormals == -1) { // handled error occured
 			return null;
 		}
+
+		// save label of function in labels map
+		String functionLbl = BaliCompiler.functionsLabelsMap
+				.createNewEntryForFunction(methodName, nbrOfFormals);
 
 		if (!f.check(')')) {  // must be an closing parenthesis
 			System.out.println("Expecting ')' at line: " + f.lineNo());
@@ -85,21 +96,26 @@ public class BaliCompiler
 			return null;
 		}
 
-		return "";
+		String samCode = functionLbl + ":\n";
+		samCode += body;
+		return samCode;
 	}
 
-	public static String getFormals(SamTokenizer f){
+	public static int getFormals(SamTokenizer f){
+		List<String> paramsList = new ArrayList<String>();
+
+		// parse the parameters
 		while(!f.test(')')) {
 			if (!f.check("int")) {
 				System.out.println("Expecting type (int) at line: " + f.lineNo());
-				return null;
+				return -1;
 			}
-			String argName;
 			try {
-				argName = f.getWord();
+				String argName = f.getWord();
+				paramsList.add(argName);
 			} catch (TokenizerException e) {
 				System.out.println("Invalid variable name at line: " + f.lineNo());
-				return null;
+				return -1;
 			}
 			if (!f.test(',')) {
 				break;
@@ -107,15 +123,25 @@ public class BaliCompiler
 				f.check(',');
 			}
 		}
-		return "";
+
+		// store parameters in symbol table
+		int n = paramsList.size();
+		for (String param : paramsList) {
+			BaliCompiler.currentSymbolTable.createNewEntryForVariable(param, -n);
+			n--;
+		}
+
+		return paramsList.size();
 	}
 
 	public static String getBody(SamTokenizer f) {
+		String samCode = "";
 		while (f.test("int")) {
 			String decl = getDeclaration(f);
 			if (decl == null) {
 				return null;
 			}
+			samCode += decl;
 		}
 		while (!f.test('}')) {
 			if (f.peekAtKind() == TokenType.EOF) {
@@ -126,8 +152,9 @@ public class BaliCompiler
 			if (stmt == null) {
 				return null;
 			}
+			samCode += stmt;
 		}
-		return "";
+		return samCode;
 	}
 
 	public static String getDeclaration(SamTokenizer f) {

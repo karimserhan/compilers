@@ -22,7 +22,6 @@ public class SymbolTable {
             }
 
         }
-
         else{
             throw new IllegalArgumentException("Variable not declared");
         }
