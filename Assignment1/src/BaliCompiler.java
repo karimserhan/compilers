@@ -18,8 +18,7 @@ public class BaliCompiler
 		System.out.println(compiler(baliFileName));
 	}
 
-	public static String compiler(String fileName)
-	{
+	public static String compiler(String fileName) {
 		//returns SaM code for program in file
 		try {
 			SamTokenizer f = new SamTokenizer (fileName);
@@ -31,6 +30,7 @@ public class BaliCompiler
 			return "STOP\n";
 		}
 	}
+	
 	public static String getProgram(SamTokenizer f) {
 		try {
 			String pgm="";
@@ -46,6 +46,7 @@ public class BaliCompiler
 			return "STOP\n";
 		}
 	}
+
 	public static String getMethod(SamTokenizer f) {
 		if (!f.check("int")) { //must match at begining
 			System.out.println("Invalid return type in method declaration at line: " + f.lineNo());
