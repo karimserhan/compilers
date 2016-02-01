@@ -66,7 +66,7 @@ public class BaliStatements {
         // generate sam code
         String samCode = expSamCode;
         samCode += "STOREOFF " + offset + "\n";
-        return "";
+        return samCode;
     }
 
     public static String getBlock(SamTokenizer f) {

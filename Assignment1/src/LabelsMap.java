@@ -23,15 +23,14 @@ public class LabelsMap {
     }
 
     //Create new Entry in Map
-    public void createNewEntryForFunction(String methodName, int numberOfParams){
+    public String createNewEntryForFunction(String methodName, int numberOfParams){
         String methodLabel = generateNewLabel() + "," + numberOfParams;
         if(!map.containsKey(methodLabel)) {
             map.put(methodName, methodLabel);
-        }
-
-        else{
+        } else{
             throw new IllegalStateException("Duplicate method name");
         }
+        return methodLabel;
     }
 
     //Get label for method
