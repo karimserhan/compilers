@@ -1,3 +1,4 @@
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
@@ -46,8 +47,12 @@ public class BaliExpressions {
         if (f.test('(')) { // method call
             f.check('(');
             // get label of function
-            String label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(variableName);
-
+            try {
+                String label = BaliCompiler.functionsLabelsMap.lookupLabelForFunction(variableName);
+            } catch (IllegalArgumentException exp) {
+                System.out.println("Method not declared: " + variableName + " at line: " + f.lineNo());
+                return null;
+            }
             // generate sam code
             samCode = "PUSHIMM 0\n"; // create return value slot
             String actualsSamCode = getActuals(f); // push parameters on stack
@@ -64,7 +69,13 @@ public class BaliExpressions {
             }
             return samCode; //fix duh
         } else { // variable use
-            return variableName;
+            try {
+                int offset = BaliCompiler.currentSymbolTable.lookupOffsetForVariable(variableName);
+                return "PUSHOFF " + offset + "\n";
+            } catch (IllegalArgumentException exp) {
+                System.out.println("Variable not declared: " + variableName + " at line: " + f.lineNo());
+                return null;
+            }
         }
     }
 
