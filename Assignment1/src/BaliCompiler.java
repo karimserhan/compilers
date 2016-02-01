@@ -10,7 +10,8 @@ public class BaliCompiler
 {
 
 	public static LabelsMap functionsLabelsMap = new LabelsMap();
-	
+	public static SymbolTable currentSymbolTable = new SymbolTable();
+
 	public static void main(String[] args) {
 		String baliFileName = "ex.bali";//args[0];
 		System.out.println(compiler(baliFileName));
