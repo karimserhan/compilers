@@ -52,7 +52,6 @@ public class BaliCompiler {
 		}
 	}
 
-	// TODO: add OS setup code here
 	private static String osSetupCode() {
 		String pgm = "start:\n";
 		pgm += "\tPUSHIMM 0\n"; //rv slot for main
