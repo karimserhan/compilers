@@ -132,11 +132,18 @@ public class BaliCompiler
 
 	public static String getDeclaration(SamTokenizer f) {
 		f.check("int");
+		String samCode = "";
 
 		while(true) {
+			//Increment number of locals
+			currentNbrOfLocals++;
+			samCode += "PUSHIMM 0";
 			String variableName;
+
 			try {
 				variableName = f.getWord();
+				//Add variable to the Symbol Table
+				currentSymbolTable.createNewEntryForVariable(variableName,currentNbrOfLocals +1);
 			} catch (TokenizerException e) {
 				System.out.println("Invalid variable name at line: " + f.lineNo());
 				return null;
@@ -144,6 +151,8 @@ public class BaliCompiler
 			if(f.test('=')) {
 				f.check('=');
 				String expression = BaliExpressions.getExp(f);
+				int offset = currentSymbolTable.lookupOffsetForVariable(variableName);
+				samCode += "STOREOFF " + offset;
 				if (expression == null) {
 					return null;
 				}
