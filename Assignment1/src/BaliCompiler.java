@@ -9,7 +9,7 @@ public class BaliCompiler
 {
 	public static void main(String[] args) {
 		String baliFileName = "ex.bali";//args[0];
-		compiler(baliFileName);
+		System.out.println(compiler(baliFileName));
 	}
 
 	public static String compiler(String fileName)
@@ -29,10 +29,9 @@ public class BaliCompiler
 		try {
 			String pgm="";
 			while(f.peekAtKind()!=TokenType.EOF) {
-				pgm = getMethod(f);
-				if (pgm == null) {
-					return null;
-				}
+				String methodSamCode = getMethod(f);
+				if(methodSamCode != null) pgm += methodSamCode;
+				else return null;
 			}
 			return pgm;
 		}
