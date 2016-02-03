@@ -2,13 +2,16 @@ import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Bali Statement parser
  */
 public class BaliStatement {
     private SamTokenizer tokenizer;
     private static int lastLabelIndexUsed = 0; // used to ensure label uniqueness
-    private static String currentWhileLabel = null; // label for the current while loop being parsed, used for break
+    private static List<String> whileLoopLabels = new ArrayList<String>(); // stack of while loop labels
     private BaliMethod.MethodMetaData methodMeta; // meta data of containing method
     private boolean doesReturn; // flag to determine whether a return statement has been found
 
@@ -123,6 +126,11 @@ public class BaliStatement {
     }
 
     private String getBreak() {
+        String currentWhileLabel = null;
+        if (!whileLoopLabels.isEmpty()) {
+            currentWhileLabel = whileLoopLabels.get(0);
+        }
+
         tokenizer.check("break");
 
         if (!tokenizer.check(';')) {
@@ -136,14 +144,19 @@ public class BaliStatement {
         }
 
         String currentWhileLabelEnd = currentWhileLabel + "End";
-        String samCode = "\tJUMP " + currentWhileLabelEnd;
+        String samCode = "\tJUMP " + currentWhileLabelEnd + "\n";
         return samCode;
     }
 
     private String getWhile() {
-        currentWhileLabel = "whileLbl" + lastLabelIndexUsed;
-        lastLabelIndexUsed++;
+        // generate label for current while loop
+        String currentWhileLabel = "whileLbl" + lastLabelIndexUsed;
         String currentWhileLabelEnd = currentWhileLabel + "End";
+        lastLabelIndexUsed++;
+
+        // push to stack
+        whileLoopLabels.add(0, currentWhileLabel);
+
 
         tokenizer.check("while");
 
@@ -175,11 +188,21 @@ public class BaliStatement {
         samCode += "\tJUMP " + currentWhileLabel + "\n";
         samCode += currentWhileLabelEnd + ":\n";
 
-        currentWhileLabel = null;
+        if (!whileLoopLabels.isEmpty()) {
+            whileLoopLabels.remove(0);
+        } else {
+            System.out.println("ERROR: Mal-formatted while loop at line: " + tokenizer.lineNo());
+            return null;
+        }
         return samCode;
     }
 
     private String getIf() {
+        //Create labels for if
+        String ifLbl = "ifLbl" + lastLabelIndexUsed;
+        String ifEndLbl = "ifEndLbl" + lastLabelIndexUsed;
+        lastLabelIndexUsed++;
+
         tokenizer.check("if");
 
         String samCode = "";
@@ -220,15 +243,11 @@ public class BaliStatement {
             this.doesReturn = true;
         }
 
-        //Create label for if
-        String ifLbl = "ifLbl" + lastLabelIndexUsed;
         samCode += expSamCode;
         samCode += "\tJUMPC " + ifLbl + "\n";
         //Add else block
         samCode += elseStmtSamCode;
 
-        String ifEndLbl = "ifEndLbl" + lastLabelIndexUsed;
-        lastLabelIndexUsed++;
         samCode += "\tJUMP " + ifEndLbl + "\n";
         samCode += ifLbl + ":\n";
         samCode += ifStmtSamCode;
