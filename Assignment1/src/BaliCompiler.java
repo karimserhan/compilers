@@ -38,6 +38,11 @@ public class BaliCompiler {
 		}
 	}
 
+	/**
+	 * Parse the program and generate the sam code
+	 * @param fileName the Bali input file name
+	 * @return the SaM code
+	 */
 	public static String compile(String fileName) {
 		//returns SaM code for program in file
 		try {
