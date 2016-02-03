@@ -1,10 +1,15 @@
 int method1(int a)
 {
     int b, counter = 0, i, j, k;
-	//b = 0;
 	if ((!0)) {
-		//b = 5;
+		b = 5;
 	} else {
+		if (1) b = 7;
+		else ;
+	}
+	while (a < 3) {
+		a = (a+1);
+		b = 3;
 	}
 	if ((b = 5)) {
 		counter = 0;

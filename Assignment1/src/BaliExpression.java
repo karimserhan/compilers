@@ -2,16 +2,20 @@ import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
+import java.util.HashSet;
+
 /**
  * Bali Expression parser
  */
 public class BaliExpression {
     private SamTokenizer tokenizer;
     private BaliMethod.MethodMetaData methodMeta;
+    private HashSet<String> initializedVars; // set of variables initialized, passed by reference
 
-    public BaliExpression(SamTokenizer t, BaliMethod.MethodMetaData meta) {
+    public BaliExpression(SamTokenizer t, BaliMethod.MethodMetaData meta, HashSet<String> initializedVars) {
         tokenizer = t;
         this.methodMeta = meta;
+        this.initializedVars = initializedVars;
     }
 
     /**
@@ -161,6 +165,11 @@ public class BaliExpression {
     }
 
     private String handleVariableUse(String variableName) {
+        if (!initializedVars.contains(variableName)) {
+            System.out.println("ERROR: Variable " + variableName + " used before being initialized. At line: " + tokenizer.lineNo());
+            return null;
+        }
+
         try {
             //Get offset from symbol table.
             //PUSH variable value on top of the stack using offset.
@@ -170,11 +179,6 @@ public class BaliExpression {
             //Variable not declared.
             //Throw "Variable not declared" error.
             System.out.println("ERROR: Variable not declared: " + variableName + " at line: " + tokenizer.lineNo());
-            return null;
-        } catch (IllegalStateException exp) {
-            //Variable not initialized.
-            //Throw "Variable not initialized" error.
-            System.out.println("ERROR: Variable " + variableName + " used before being initialized. At line: " + tokenizer.lineNo());
             return null;
         }
     }

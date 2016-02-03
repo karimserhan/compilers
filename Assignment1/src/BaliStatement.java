@@ -3,6 +3,7 @@ import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -14,11 +15,13 @@ public class BaliStatement {
     private static List<String> whileLoopLabels = new ArrayList<String>(); // stack of while loop labels
     private BaliMethod.MethodMetaData methodMeta; // meta data of containing method
     private boolean doesReturn; // flag to determine whether a return statement has been found
+    private HashSet<String> initializedVars; // set of variables initialized, passed by reference and updated throught the parsing
 
-    public BaliStatement(SamTokenizer t, BaliMethod.MethodMetaData meta) {
+    public BaliStatement(SamTokenizer t, BaliMethod.MethodMetaData meta, HashSet<String> initializedVars) {
         this.tokenizer = t;
         this.methodMeta = meta;
         this.doesReturn = false;
+        this.initializedVars = initializedVars;
     }
 
     /**
@@ -64,7 +67,7 @@ public class BaliStatement {
         }
 
         tokenizer.check('=');
-        String expSamCode = new BaliExpression(tokenizer, methodMeta).getExp();
+        String expSamCode = new BaliExpression(tokenizer, methodMeta, initializedVars).getExp();
         if (expSamCode == null) { // ma akal
             return null;
         }
@@ -79,7 +82,7 @@ public class BaliStatement {
         try {
             //Expression is complete
             //Set variable to initialized
-            methodMeta.symbolTable.markVariableInitialized(writeVariable);
+            initializedVars.add(writeVariable);
             offset = methodMeta.symbolTable.lookupOffset(writeVariable);
         } catch (IllegalArgumentException exp) {
             System.out.println("ERROR: Variable not declared: " + writeVariable + " at line: " + tokenizer.lineNo());
@@ -104,8 +107,11 @@ public class BaliStatement {
                 printedWarningMsg = true;
             }
 
-            BaliStatement stmt = new BaliStatement(tokenizer, methodMeta);
+            // parse sub-statement and update list of initialized vars
+            HashSet<String> nextInitializedVars = new HashSet<String>(initializedVars);
+            BaliStatement stmt = new BaliStatement(tokenizer, methodMeta, nextInitializedVars);
             String stmtCode = stmt.getStatement();
+            initializedVars.addAll(nextInitializedVars);
 
             // set return flag of the block statement
             if (stmt.doesReturn()) {
@@ -164,7 +170,7 @@ public class BaliStatement {
             System.out.println("ERROR: Expecting '(' at line: " + tokenizer.lineNo());
             return null;
         }
-        String expSamCode = new BaliExpression(tokenizer, methodMeta).getExp();
+        String expSamCode = new BaliExpression(tokenizer, methodMeta, initializedVars).getExp();
         if (expSamCode == null) {
             return null;
         }
@@ -174,11 +180,13 @@ public class BaliStatement {
             return null;
         }
 
-        BaliStatement stmt = new BaliStatement(tokenizer, methodMeta);
+        HashSet<String> nextInitializedVars = new HashSet<String>(initializedVars);
+        BaliStatement stmt = new BaliStatement(tokenizer, methodMeta, nextInitializedVars);
         String stmtSamCode = stmt.getStatement();
         if (stmtSamCode == null) {
             return null;
         }
+        // note: list of initialized vars doesn't change
 
         String samCode = currentWhileLabel + ":\n";
         samCode += expSamCode;
@@ -210,7 +218,7 @@ public class BaliStatement {
             System.out.println("ERROR: Expecting '(' at line: " + tokenizer.lineNo());
             return null;
         }
-        String expSamCode = new BaliExpression(tokenizer, methodMeta).getExp();
+        String expSamCode = new BaliExpression(tokenizer, methodMeta, initializedVars).getExp();
         if (expSamCode == null) {
             return null;
         }
@@ -220,7 +228,8 @@ public class BaliStatement {
             return null;
         }
         //Get statement for if block
-        BaliStatement ifStmt = new BaliStatement(tokenizer, methodMeta);
+        HashSet<String> nextInitializedIfVars = new HashSet<String>(initializedVars);
+        BaliStatement ifStmt = new BaliStatement(tokenizer, methodMeta, nextInitializedIfVars);
         String ifStmtSamCode = ifStmt.getStatement();
         if (ifStmtSamCode == null) {
             return null;
@@ -232,7 +241,8 @@ public class BaliStatement {
         }
 
         //Get statement for else block
-        BaliStatement elseStmt = new BaliStatement(tokenizer, methodMeta);
+        HashSet<String> nextInitializedElseVars = new HashSet<String>(initializedVars);
+        BaliStatement elseStmt = new BaliStatement(tokenizer, methodMeta, nextInitializedElseVars);
         String elseStmtSamCode = elseStmt.getStatement();
         if (elseStmtSamCode == null) {
             return null;
@@ -242,6 +252,9 @@ public class BaliStatement {
         if (ifStmt.doesReturn() && elseStmt.doesReturn()) {
             this.doesReturn = true;
         }
+        //Update initliazed vars to vars intialized by both if and else statement
+        nextInitializedIfVars.retainAll(nextInitializedElseVars);
+        initializedVars.addAll(nextInitializedIfVars);
 
         samCode += expSamCode;
         samCode += "\tJUMPC " + ifLbl + "\n";
@@ -258,7 +271,7 @@ public class BaliStatement {
 
     public String getReturn() {
         tokenizer.check("return");
-        String expSamCode = new BaliExpression(tokenizer, methodMeta).getExp();
+        String expSamCode = new BaliExpression(tokenizer, methodMeta, initializedVars).getExp();
         if (expSamCode == null) {
             return null;
         }

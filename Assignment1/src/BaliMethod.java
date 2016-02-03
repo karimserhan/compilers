@@ -3,6 +3,7 @@ import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class BaliMethod {
     
     private SamTokenizer tokenizer;
     private MethodMetaData metaData;
+    private HashSet<String> initializedVars;
 
     public BaliMethod(SamTokenizer t) {
         tokenizer = t;
@@ -27,6 +29,7 @@ public class BaliMethod {
         metaData.nbrOfLocals = 0;
         metaData.nbrOfFormals = 0;
         metaData.symbolTable = new SymbolTable();
+        initializedVars = new HashSet<String>();
     }
 
     /**
@@ -111,7 +114,7 @@ public class BaliMethod {
         for (String param : paramsList) {
             try {
                 metaData.symbolTable.createNewEntry(param, -n);
-                metaData.symbolTable.markVariableInitialized(param);
+                initializedVars.add(param);
             } catch (IllegalStateException exp) {
                 System.out.println("ERROR: Variable already defined at line: " + tokenizer.lineNo());
                 return -1;
@@ -146,7 +149,7 @@ public class BaliMethod {
                 printedWarningMsg = true;
             }
             // parse statement
-            BaliStatement stmt = new BaliStatement(tokenizer, metaData);
+            BaliStatement stmt = new BaliStatement(tokenizer, metaData, initializedVars);
             String stmtSamCode = stmt.getStatement();
             if (stmtSamCode == null) {
                 return null;
@@ -188,9 +191,9 @@ public class BaliMethod {
             }
             if(tokenizer.test('=')) {
                 tokenizer.check('=');
-                String expression = new BaliExpression(tokenizer, metaData).getExp();
+                String expression = new BaliExpression(tokenizer, metaData, initializedVars).getExp();
                 if (expression == null) { return null; }
-                metaData.symbolTable.markVariableInitialized(variableName);
+                initializedVars.add(variableName);
                 int offset = metaData.symbolTable.lookupOffset(variableName);
                 samCode += expression;
                 samCode += "\tSTOREOFF " + offset +"\n";
