@@ -13,34 +13,44 @@ public class BaliExpression {
 
     public String getExp() {
         String samCode = "";
-        // Literal case
+        // Check if EXP is float. Throw error if float.
         if(tokenizer.peekAtKind() == Tokenizer.TokenType.FLOAT) {
             System.out.println("ERROR: Floating point numbers are not supported; at line: " + tokenizer.lineNo());
             return null;
         }
+        //Check if EXP is Integer.
+        //If Integer, PUSHIMM the value of the integer on the stack.
         if(tokenizer.peekAtKind() == Tokenizer.TokenType.INTEGER) {
             int value = tokenizer.getInt();
             samCode = "\tPUSHIMM" +  " " + value + "\n";
             return samCode;
         }
+        //Check if EXP is true.
+        //If true, PUSHIMM 1 on the stack.
         if(tokenizer.test("true")) {
             tokenizer.check("true");
             samCode = "\tPUSHIMM 1" + "\n";
             return samCode;
         }
+        //Check if EXP is false.
+        //If false, PUSHIMM 0 on the stack.
         if(tokenizer.test("false")) {
             tokenizer.check("false");
             samCode = "\tPUSHIMM 0" + "\n";
             return samCode;
         }
 
-        // not a literal case
+        // Check if next token is '('
+        // If next token is '(', call getParenthesizedExp().
         if(tokenizer.test('(')) {
             return getParenthesizedExp();
         }
 
-        //Method or Location
+        //Case where EXP is either location or method.
+        //Either way, get the variable name.
         String variableName;
+        //Try getting the variable name.
+        //If name is not a valid variable name, return "Invalid variable name" error.
         try {
             variableName = tokenizer.getWord();
         }
@@ -49,9 +59,11 @@ public class BaliExpression {
             return null;
         }
 
-        if (tokenizer.test('(')) { // method call
+        if (tokenizer.test('(')) {
+            //Case where EXP is a method call.
             return handleMethodCall(variableName);
-        } else { // variable use
+        } else {
+            //Case where EXP is a variable.
             return handleVariableUse(variableName);
         }
     }
@@ -139,12 +151,18 @@ public class BaliExpression {
 
     private String handleVariableUse(String variableName) {
         try {
+            //Get offset from symbol table.
+            //PUSH variable value on top of the stack using offset.
             int offset = methodMeta.symbolTable.lookupOffset(variableName);
             return "\tPUSHOFF " + offset + "\n";
         } catch (IllegalArgumentException exp) {
+            //Variable not declared.
+            //Throw "Variable not declared" error.
             System.out.println("ERROR: Variable not declared: " + variableName + " at line: " + tokenizer.lineNo());
             return null;
         } catch (IllegalStateException exp) {
+            //Variable not initialized.
+            //Throw "Variable not initialized" error.
             System.out.println("ERROR: Variable " + variableName + " used before being initialized. At line: " + tokenizer.lineNo());
             return null;
         }
