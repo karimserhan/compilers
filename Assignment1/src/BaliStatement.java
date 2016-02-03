@@ -74,7 +74,7 @@ public class BaliStatement {
 
 
         if (!tokenizer.check(';')) {
-            System.out.println("ERROR: Expecting ';' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo() + ". Did you miss a ';'?");
             return null;
         }
 
@@ -140,7 +140,7 @@ public class BaliStatement {
         tokenizer.check("break");
 
         if (!tokenizer.check(';')) {
-            System.out.println("ERROR: Expecting ';' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo() + ". Did you miss a ';'?");
             return null;
         }
 
@@ -277,7 +277,7 @@ public class BaliStatement {
         }
 
         if (!tokenizer.check(';')) {
-            System.out.println("ERROR: Expecting ';' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo() + ". Did you miss a ';'?");
             return null;
         }
 
