@@ -269,7 +269,7 @@ public class BaliStatement {
         return samCode;
     }
 
-    public String getReturn() {
+    private String getReturn() {
         tokenizer.check("return");
         String expSamCode = new BaliExpression(tokenizer, methodMeta, initializedVars).getExp();
         if (expSamCode == null) {

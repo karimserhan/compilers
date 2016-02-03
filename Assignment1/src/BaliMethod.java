@@ -177,11 +177,18 @@ public class BaliMethod {
         while(true) {
             //Increment number of locals
             metaData.nbrOfLocals++;
+            boolean varAssigned = false;
+
             samCode += "\tPUSHIMM 0\n";
             String variableName;
 
             try {
                 variableName = tokenizer.getWord();
+                if (!isValidVarName(variableName)) {
+                    System.out.println("ERROR: Cannot used reserved keyword as a variable name, at line: " + tokenizer.lineNo());
+                    return null;
+                }
+
                 //Add variable to the Symbol Table
                 metaData.symbolTable.createNewEntry(variableName, metaData.nbrOfLocals + 1);
             } catch (TokenizerException e) {
@@ -192,6 +199,7 @@ public class BaliMethod {
                 return null;
             }
             if(tokenizer.test('=')) {
+                varAssigned = true;
                 tokenizer.check('=');
                 String expression = new BaliExpression(tokenizer, metaData, initializedVars).getExp();
                 if (expression == null) { return null; }
@@ -205,19 +213,30 @@ public class BaliMethod {
                 }
             }
 
+            if (!tokenizer.test(',') && !tokenizer.test(';')) {
+                if (!varAssigned) {
+                    System.out.println("ERROR: Expecting ';' at line: " + tokenizer.lineNo());
+                } else {
+                    System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo() + ". Did you miss a ';'?");
+                }
+                return null;
+            }
+
             if(!tokenizer.test(',')) {
                 break;
             } else {
                 tokenizer.check(',');
             }
         }
-
-        if(!tokenizer.check(';')) {
-            System.out.println("ERROR: Expecting ';' at line: " + tokenizer.lineNo());
-            return null;
-        }
+        tokenizer.check(';');
 
         //Need to change
         return samCode;
+    }
+
+    public boolean isValidVarName(String name) {
+        return !name.equals("int") && !name.equals("return") && !name.equals("if")
+                && !name.equals("else") && !name.equals("while") && !name.equals("break")
+                && !name.equals("true") && !name.equals("false");
     }
 }
