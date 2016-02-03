@@ -1,6 +1,6 @@
 int method1(int a)
 {
-    int b, counter = 0, i, j;
+    int b, counter = 0, i, j, k;
 	b = 0;
 	if ((!b)) {
 		b = 5;
@@ -10,13 +10,21 @@ int method1(int a)
 		counter = 0;
 		i = 0;
 		j = 0;
-		while ((i < 2)) {
+		while ((i < 5)) {
 			j = 0;
-			while ((j < 3)) {
-				counter = (counter + 1);
-				j = (j +1);
-				if ((j =3)) break;
+			while ((j < 7)) {
+				if ((j =4)) break;
 				else ;
+				k = 0;
+				while ((k < 6)) {
+					if ((k = 3)) {
+						break;
+					} else {}
+					k = (k+1);
+					counter = (counter + 1);
+				}
+				j = (j +1);
+
 			}
 			i = (i+1);
 		}
