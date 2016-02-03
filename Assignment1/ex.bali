@@ -1,9 +1,9 @@
 int method1(int a)
 {
     int b, counter = 0, i, j, k;
-	b = 0;
-	if ((!b)) {
-		b = 5;
+	//b = 0;
+	if ((!0)) {
+		//b = 5;
 	} else {
 	}
 	if ((b = 5)) {

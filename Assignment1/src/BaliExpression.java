@@ -81,7 +81,9 @@ public class BaliExpression {
         if (tokenizer.test('-')) { // unary operator '-'
             tokenizer.check('-');
             //Generate SAM code
-            samCode = getExp();
+            String expCode = getExp();
+            if (expCode == null) { return null; }
+            samCode = expCode;
             samCode += "\tPUSHIMM -1\n";
             samCode += "\tTIMES\n";
         } else if (tokenizer.test('!')){ // unary operator '!'
@@ -89,7 +91,9 @@ public class BaliExpression {
                 System.out.println("ERROR: Invalid unary operator at line: " + tokenizer.lineNo() + ". - and ! are the only valid unary operators.");
                 return null;
             }
-            samCode = getExp();
+            String expCode = getExp();
+            if (expCode == null) { return null; }
+            samCode = expCode;
             samCode += "\tISNIL\n";
         } else { //binary operators or single parenthesized expression
             // read first expression

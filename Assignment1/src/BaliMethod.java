@@ -189,6 +189,7 @@ public class BaliMethod {
             if(tokenizer.test('=')) {
                 tokenizer.check('=');
                 String expression = new BaliExpression(tokenizer, metaData).getExp();
+                if (expression == null) { return null; }
                 metaData.symbolTable.markVariableInitialized(variableName);
                 int offset = metaData.symbolTable.lookupOffset(variableName);
                 samCode += expression;
