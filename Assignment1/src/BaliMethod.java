@@ -5,7 +5,13 @@ import edu.cornell.cs.sam.io.TokenizerException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Bali Method parser
+ */
 public class BaliMethod {
+    /**
+     * Structure that holds method meta data to be used by the compiler
+     */
     public static class MethodMetaData {
         public SymbolTable symbolTable;
         public int nbrOfFormals;
@@ -23,6 +29,10 @@ public class BaliMethod {
         metaData.symbolTable = new SymbolTable();
     }
 
+    /**
+     * Parse the method from the input file
+     * @return the generated sam code
+     */
     public String getMethod() {
         if (!tokenizer.check("int")) { //must match at begining
             System.out.println("ERROR: Invalid return type in method declaration at line: " + tokenizer.nextLineNo());

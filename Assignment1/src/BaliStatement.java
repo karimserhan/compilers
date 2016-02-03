@@ -2,12 +2,15 @@ import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
+/**
+ * Bali Statement parser
+ */
 public class BaliStatement {
     private SamTokenizer tokenizer;
-    private static int lastLabelIndexUsed = 0;
-    private static String currentWhileLabel = null;
-    private BaliMethod.MethodMetaData methodMeta;
-    private boolean doesReturn;
+    private static int lastLabelIndexUsed = 0; // used to ensure label uniqueness
+    private static String currentWhileLabel = null; // label for the current while loop being parsed, used for break
+    private BaliMethod.MethodMetaData methodMeta; // meta data of containing method
+    private boolean doesReturn; // flag to determine whether a return statement has been found
 
     public BaliStatement(SamTokenizer t, BaliMethod.MethodMetaData meta) {
         this.tokenizer = t;
@@ -15,6 +18,10 @@ public class BaliStatement {
         this.doesReturn = false;
     }
 
+    /**
+     * Parse the statement from the input file
+     * @return the generated sam code
+     */
     public String getStatement() {
         String samCode;
         if (tokenizer.test("return")) {

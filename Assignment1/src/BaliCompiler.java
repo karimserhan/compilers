@@ -5,7 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+/**
+ * Main class
+ */
 public class BaliCompiler {
+	// map that holds the label and param information of methods
 	public static MethodLabelsMap methodLabelsMap = new MethodLabelsMap();
 
 	public static void main(String[] args) {
@@ -34,12 +38,18 @@ public class BaliCompiler {
 		}
 	}
 
+	/**
+	 * Parse the program and generate the sam code
+	 * @param fileName the Bali input file name
+	 * @return the SaM code
+	 */
 	public static String compile(String fileName) {
 		//returns SaM code for program in file
 		try {
 			SamTokenizer f = new SamTokenizer (fileName);
 			String pgm = osSetupCode() + "\n";
 			while(f.peekAtKind() != TokenType.EOF) {
+				// get sam code for each method
 				String methodSamCode = new BaliMethod(f).getMethod();
 				if(methodSamCode != null) pgm += methodSamCode + "\n";
 				else return null;
@@ -52,6 +62,9 @@ public class BaliCompiler {
 		}
 	}
 
+	/**
+	 * @return the standard OS code that launches main
+	 */
 	private static String osSetupCode() {
 		String pgm = "start:\n";
 		pgm += "\tPUSHIMM 0\n"; //rv slot for main
