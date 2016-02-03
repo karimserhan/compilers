@@ -21,6 +21,8 @@ public class BaliMethod {
     
     private SamTokenizer tokenizer;
     private MethodMetaData metaData;
+
+    // set containing the list of variables known to be initialized at a particular point in the file
     private HashSet<String> initializedVars;
 
     public BaliMethod(SamTokenizer t) {
@@ -114,7 +116,7 @@ public class BaliMethod {
         for (String param : paramsList) {
             try {
                 metaData.symbolTable.createNewEntry(param, -n);
-                initializedVars.add(param);
+                initializedVars.add(param); // mark parameter as an initialized variable
             } catch (IllegalStateException exp) {
                 System.out.println("ERROR: Variable already defined at line: " + tokenizer.lineNo());
                 return -1;
@@ -145,7 +147,7 @@ public class BaliMethod {
             }
             // print warning message
             if (doesReturn && !printedWarningMsg) {
-                System.out.println("WARNING: unreachable code, line: " + tokenizer.nextLineNo());
+                System.out.println("WARNING: unreachable statement, line: " + tokenizer.nextLineNo());
                 printedWarningMsg = true;
             }
             // parse statement

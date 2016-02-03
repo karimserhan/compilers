@@ -15,7 +15,7 @@ public class BaliStatement {
     private static List<String> whileLoopLabels = new ArrayList<String>(); // stack of while loop labels
     private BaliMethod.MethodMetaData methodMeta; // meta data of containing method
     private boolean doesReturn; // flag to determine whether a return statement has been found
-    private HashSet<String> initializedVars; // set of variables initialized, passed by reference and updated throught the parsing
+    private HashSet<String> initializedVars; // set of variables initialized, passed by reference and updated throughout the parsing
 
     public BaliStatement(SamTokenizer t, BaliMethod.MethodMetaData meta, HashSet<String> initializedVars) {
         this.tokenizer = t;
@@ -176,7 +176,7 @@ public class BaliStatement {
         }
 
         if (!tokenizer.check(')')) {
-            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -199,7 +199,7 @@ public class BaliStatement {
         if (!whileLoopLabels.isEmpty()) {
             whileLoopLabels.remove(0);
         } else {
-            System.out.println("ERROR: Mal-formatted while loop at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed while loop at line: " + tokenizer.lineNo());
             return null;
         }
         return samCode;
@@ -224,7 +224,7 @@ public class BaliStatement {
         }
 
         if (!tokenizer.check(')')) {
-            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo());
             return null;
         }
         //Get statement for if block
