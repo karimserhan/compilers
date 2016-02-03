@@ -2,6 +2,9 @@ import edu.cornell.cs.sam.io.SamTokenizer;
 import edu.cornell.cs.sam.io.Tokenizer;
 import edu.cornell.cs.sam.io.TokenizerException;
 
+/**
+ * Bali Expression parser
+ */
 public class BaliExpression {
     private SamTokenizer tokenizer;
     private BaliMethod.MethodMetaData methodMeta;
@@ -11,6 +14,10 @@ public class BaliExpression {
         this.methodMeta = meta;
     }
 
+    /**
+     * Parse the expression from the input file
+     * @return the generated sam code
+     */
     public String getExp() {
         String samCode = "";
         // Check if EXP is float. Throw error if float.
