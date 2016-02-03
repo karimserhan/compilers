@@ -62,7 +62,7 @@ public class BaliExpression {
             variableName = tokenizer.getWord();
         }
         catch (TokenizerException e) {
-            System.out.println("ERROR: Invalid variable name at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -114,7 +114,7 @@ public class BaliExpression {
 
         // eat up the remaining )
         if (!tokenizer.check(')')) {
-            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo());
             return null;
         }
 
@@ -209,7 +209,7 @@ public class BaliExpression {
         samCode += "\tJSR " + label + "\n"; // jump to function
 
         if (!tokenizer.check(')')) {
-            System.out.println("ERROR: Expecting ')' at line: " + tokenizer.lineNo());
+            System.out.println("ERROR: Malformed expression at line: " + tokenizer.lineNo());
             return null;
         }
 
