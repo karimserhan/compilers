@@ -1,45 +1,10 @@
-int method1(int a)
+int fact(int n)
 {
-    int b, counter = 0, i, j, k;
-	if ((!0)) {
-		b = 5;
-	} else {
-		if (1) b = 7;
-		else b = 3;
-	}
-	while ((a < 3)) {
-		a = (a+1);
-		b = 3;
-	}
-	if ((b = 5)) {
-		counter = 0;
-		i = 0;
-		j = 0;
-		while ((i < 5)) {
-			j = 0;
-			while ((j < 7)) {
-				if ((j =4)) break;
-				else ;
-				k = 0;
-				while ((k < 6)) {
-					if ((k = 3)) {
-						break;
-					} else {}
-					k = (k+1);
-					counter = (counter + 1);
-				}
-				j = (j +1);
-
-			}
-			i = (i+1);
-		}
-	} else {
-	}
-	return counter;
+	if((n=0)) return 1;
+	else return (n * fact((n-1)));
 }
 
 int main()
 {
-	int hello, x = (3+5)
-    return method1(5); // expected 60
+	return fact(4);
 }

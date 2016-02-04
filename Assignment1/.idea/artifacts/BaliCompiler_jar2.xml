@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="BaliCompiler:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/BaliCompiler_jar2</output-path>
+    <root id="archive" name="BaliCompiler.jar">
+      <element id="module-output" name="BaliCompiler" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/SaM-2.6.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
